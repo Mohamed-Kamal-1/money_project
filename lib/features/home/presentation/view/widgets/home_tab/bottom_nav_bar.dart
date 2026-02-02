@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
-class AppBottomNavBar extends StatefulWidget {
-  const AppBottomNavBar({super.key});
+import 'floating_button.dart';
 
-  @override
-  State<AppBottomNavBar> createState() => _AppBottomNavBarState();
-}
+typedef OnClick = Function(int index);
 
-class _AppBottomNavBarState extends State<AppBottomNavBar> {
-  int currentIndex = 0;
+class AppBottomNavBar extends StatelessWidget {
+  final OnClick onClick;
+  final int currentIndex;
+
+  const AppBottomNavBar(
+      {super.key, required this.onClick, required this.currentIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -22,29 +23,30 @@ class _AppBottomNavBarState extends State<AppBottomNavBar> {
           animationDuration: const Duration(seconds: 1, milliseconds: 100),
           selectedIndex: currentIndex,
 
-          onDestinationSelected: (value) {
-            currentIndex = value;
-            setState(() {});
-          },
-          destinations: [
+          onDestinationSelected: onClick,
+          destinations: const [
             NavigationDestination(icon: Icon(Icons.home_filled), label: "Home"),
             NavigationDestination(
               icon: Icon(Icons.pie_chart_outline),
               label: "Analytics",
-           ),
-            const SizedBox(width: 0,),
-            NavigationDestination(
-             icon: Icon(Icons.history_sharp),
-              label: "Search",
             ),
+            // const SizedBox(width: 0,),
+
+            RepaintBoundary(child: FloatingButton()),
+
+            NavigationDestination(
+              icon: Icon(Icons.history_sharp),
+              label: "History",
+            ),
+
 
             NavigationDestination(
               icon: Icon(Icons.description_rounded),
               label: "Profile",
             ),
           ],
-        ),
-      ),
+        ),)
+      ,
     );
   }
 }
