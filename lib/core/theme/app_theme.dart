@@ -7,6 +7,13 @@ import '../widgets_for_all_app/gradient_shape.dart';
 
 class AppTheme {
   static final appTheme = ThemeData(
+
+    pageTransitionsTheme: PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        }
+    ),
     useMaterial3: true,
     scaffoldBackgroundColor: AppColor.primaryColor,
     navigationBarTheme: NavigationBarThemeData(

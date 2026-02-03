@@ -4,6 +4,7 @@ import 'package:money/features/categories/presentation/view/widgets/category_lis
 import '../../../../core/colors/app_color.dart';
 import '../../../../core/dimensions/Dimension_app.dart';
 import '../../../../core/extensions/theme_extension.dart';
+import '../../../../core/routes/app_route.dart';
 import '../../../../core/widgets_for_all_app/gradient_button.dart';
 import 'widgets/category_insights.dart';
 
@@ -30,16 +31,16 @@ class CategoriesScreen extends StatelessWidget {
                 style: context.fonts.bodyMedium?.copyWith(color: AppColor.gray),
               ),
 
-              // Add Category Button
+
               GradientButton(
                 text: 'Add Custom Category',
                 icon: Icons.add,
                 onTap: () {
-                  // TODO: Navigate to add category
+                  Navigator.pushNamed(context, AppRoute.AddExpenseScreen.name);
                 },
               ),
 
-              // Category List
+
               CategoryListItem(
                 icon: Icons.restaurant,
                 iconBackgroundColor: AppColor.orangeCategory,
@@ -88,17 +89,16 @@ class CategoriesScreen extends StatelessWidget {
                 budget: 450,
               ),
 
-              // Divider
+
               Container(height: 1, color: AppColor.borderGray),
 
-              // Insights Section
+
               const CategoryInsights(
                 totalCategories: 6,
                 totalBudget: 3650,
                 totalSpent: 2847,
               ),
 
-              // Bottom spacing for navigation bar
               const SizedBox(height: 80),
             ],
           ),
@@ -107,112 +107,6 @@ class CategoriesScreen extends StatelessWidget {
     );
   }
 
-  // List<Widget> _buildCategoryList() {
-  //   final categories = [
-  //     CategoryData(
-  //       icon: Icons.restaurant,
-  //       color: AppColor.orangeCategory,
-  //       name: 'Food & Dining',
-  //       spent: 842,
-  //       budget: 900,
-  //     ),
-  //     CategoryData(
-  //       icon: Icons.directions_car,
-  //       color: AppColor.pinkCategory,
-  //       name: 'Transport',
-  //       spent: 456,
-  //       budget: 600,
-  //     ),
-  //     CategoryData(
-  //       icon: Icons.shopping_bag,
-  //       color: AppColor.purpleCategory,
-  //       name: 'Shopping',
-  //       spent: 623,
-  //       budget: 800,
-  //     ),
-  //     CategoryData(
-  //       icon: Icons.movie,
-  //       color: AppColor.cyanCategory,
-  //       name: 'Entertainment',
-  //       spent: 312,
-  //       budget: 400,
-  //     ),
-  //     CategoryData(
-  //       icon: Icons.favorite,
-  //       color: AppColor.redCategory,
-  //       name: 'Health',
-  //       spent: 234,
-  //       budget: 500,
-  //     ),
-  //     CategoryData(
-  //       icon: Icons.bolt,
-  //       color: AppColor.blueCategoryDark,
-  //       name: 'Utilities',
-  //       spent: 380,
-  //       budget: 450,
-  //     ),
-  //
-  //     CategoryData(
-  //       icon: Icons.bolt,
-  //       color: AppColor.blueCategoryDark,
-  //       name: 'Utilities',
-  //       spent: 380,
-  //       budget: 450,
-  //     ),
-  //
-  //     CategoryData(
-  //       icon: Icons.bolt,
-  //       color: AppColor.blueCategoryDark,
-  //       name: 'Utilities',
-  //       spent: 380,
-  //       budget: 450,
-  //     ),
-  //
-  //     CategoryData(
-  //       icon: Icons.bolt,
-  //       color: AppColor.blueCategoryDark,
-  //       name: 'Utilities',
-  //       spent: 380,
-  //       budget: 450,
-  //     ),
-  //
-  //     CategoryData(
-  //       icon: Icons.bolt,
-  //       color: AppColor.blueCategoryDark,
-  //       name: 'Utilities',
-  //       spent: 380,
-  //       budget: 450,
-  //     ),
-  //
-  //     CategoryData(
-  //       icon: Icons.bolt,
-  //       color: AppColor.blueCategoryDark,
-  //       name: 'Utilities',
-  //       spent: 380,
-  //       budget: 450,
-  //     ),
-  //   ];
-  //
-  //   return categories
-  //       .map(
-  //         (category) => CategoryListItem(
-  //           icon: category.icon,
-  //           iconBackgroundColor: category.color,
-  //           categoryName: category.name,
-  //           spent: category.spent,
-  //           budget: category.budget,
-  //         ),
-  //       )
-  //       .toList();
-  // }
-
-  // CategoryListItem(
-  // icon: category.icon,
-  // iconBackgroundColor: category.color,
-  // categoryName: category.name,
-  // spent: category.spent,
-  // budget: category.budget,
-  // )
 }
 
 class CategoryData {

@@ -25,7 +25,8 @@ class AppBottomNavBar extends StatelessWidget {
 
           onDestinationSelected: onClick,
           destinations: const [
-            NavigationDestination(icon: Icon(Icons.home_filled), label: "Home"),
+            NavigationDestination(
+                icon: Icon(Icons.home_filled), label: "Home"),
             NavigationDestination(
               icon: Icon(Icons.pie_chart_outline),
               label: "Analytics",

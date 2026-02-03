@@ -1,10 +1,13 @@
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:money/core/routes/app_route.dart';
+import 'package:money/core/routes/routes.dart';
 
 import 'core/theme/app_theme.dart';
-import 'features/home/presentation/view/home_tab.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -16,7 +19,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.appTheme,
-      home: const HomeTab(),
+      // initialRoute: AppRoute.HomeTab.name,
+      initialRoute: AppRoute.LoginScreen.name,
+      routes: routs,
     );
   }
 }
