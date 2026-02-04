@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 
 import '../model/user_model.dart';
+import '../uer_dto.dart';
 
 class AuthServiceImpl extends ChangeNotifier {
   final FirebaseAuth _authService = FirebaseAuth.instance;
