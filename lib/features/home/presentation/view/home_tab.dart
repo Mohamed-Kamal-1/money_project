@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:money/features/home/presentation/view/analysis_screen.dart';
 import 'package:money/features/home/presentation/view/widgets/home_tab/bottom_nav_bar.dart';
-import 'package:money/features/home/presentation/view/widgets/home_tab/floating_button.dart';
-
+import '../../../analysis/analysis_screen.dart';
 import '../../../categories/presentation/view/categories_screen.dart';
 import 'home_screen.dart';
 

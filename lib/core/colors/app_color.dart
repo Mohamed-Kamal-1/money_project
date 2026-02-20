@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppColor {
+  static const Color whiteGlass = Color(0x1AFFFFFF);
   static const Color primaryColor = Color(0xFF0B0F19);
   static const Color hoverIcons = Colors.lightBlue;
   static const Color bottomNavBarBackGround = Color(0xFF121826);
@@ -29,7 +30,18 @@ class AppColor {
   static const Color deepJungleGreen = Color(0xFF0F2926);
   static const Color darkNavy = Color(0xFF1A1B2E);
   static const Color borderGray = Color(0xFF2D3748);
+  static const Color cardBackground = Color(0xFF1A1D2E);
+  static const Color inputFieldBorder = Color(0xFF2E3142);
+  static const Color greenOnline = Color(0xFF22C55E);
+  static const Color vividViolet = Color(0xFF7F22FE);
+  static const Color electricPurple = Color(0xFF9810FA);
 
+  static const Color brightMagenta = Color(0xFFC800DE);
+  static const LinearGradient buttonLoginGradient = LinearGradient(
+    colors: [vividViolet, electricPurple, brightMagenta],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+  );
   static const LinearGradient navGradient = LinearGradient(
     colors: [blueStart, purpleEnd],
     begin: Alignment.centerLeft,

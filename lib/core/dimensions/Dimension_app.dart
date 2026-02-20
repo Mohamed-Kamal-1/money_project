@@ -3,15 +3,18 @@ abstract class Dimension {
 
   //Padding//
   //================================//
+  static const double padding8 = 8;
   static const double padding16 = 16;
   static const double padding24 = 24;
   static const double padding12 = 12;
   static const double padding19 = 19;
+  // static const double padding = 32;
   static const double padding27 = 27;
   static const double padding20 = 20;
 
   //Spacing//
   //================================//
+  static const double spacing4 = 4;
   static const double spacing24 = 24;
   static const double spacing20 = 20;
   static const double spacing8 = 8;
@@ -21,6 +24,7 @@ abstract class Dimension {
   //height And Width//
   //================================//
   static const double heightCard245 = 245;
+  static const double heightCard327 = 327;
   static const double heightCard192 = 192;
   static const double heightCard79 = 79;
   static const double heightCard145 = 145;
@@ -42,4 +46,6 @@ abstract class Dimension {
   static const double circular32 = 32;
   static const double circular16 = 16;
   static const double circular12 = 12;
+
+
 }

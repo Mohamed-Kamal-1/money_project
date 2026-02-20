@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../core/colors/app_color.dart';
+import '../../../../../../../core/colors/app_color.dart';
+import '../../../../../../../core/routes/app_route.dart';
+
 
 class FloatingButton extends StatelessWidget {
   const FloatingButton({super.key});
@@ -34,7 +36,9 @@ class FloatingButton extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, AppRoute.AddExpenseScreen.name);
+        },
 
         child: Icon(Icons.add),
       ),
