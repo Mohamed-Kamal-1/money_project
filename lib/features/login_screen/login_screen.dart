@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:money/core/dimensions/Dimension_app.dart';
+import 'package:money/core/extensions/theme_extension.dart';
 
 import '../../core/AppFromField.dart';
+import '../../core/app_image/app_image.dart';
 import '../../core/colors/app_color.dart';
 import '../../core/dimensions/radius_app.dart';
 import '../../core/routes/app_route.dart';
@@ -22,6 +24,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  static const String welcomeText = 'Welcome Bac';
+  static const String signInText = 'Sign in to continue tracking your finance';
+
   final formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -91,94 +96,112 @@ class _LoginScreenState extends State<LoginScreen> {
             body: SafeArea(
               child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
-                  return SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
+                  return Center(
                     child: ConstrainedBox(
 
                       constraints: BoxConstraints(
-                        minHeight: 600,
+
                       ),
-                      child: IntrinsicHeight(
-                        child: Form(
-                          key: formKey,
-                          child: Center(
-                            child: Container(
-                              alignment: Alignment.center,
-                              margin: EdgeInsets.symmetric(
-                                horizontal: Dimension.padding24,
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: Dimension.padding24,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(
-                                  RadiusApp.circular24,
+                      child: SingleChildScrollView(
+
+                        child: Column(
+                          spacing: 50,
+                          crossAxisAlignment: .center,
+                          mainAxisAlignment: .spaceBetween,
+                          children: [
+                            Image.asset(AppImage.loginInamge),
+                            // SizedBox(height: 50,),
+                            Text(welcomeText, style: context.fonts.displayMedium),
+                            Text(signInText, style: context.fonts.titleLarge),
+                            Form(
+                              key: formKey,
+                              child: Center(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  margin: EdgeInsets.symmetric(
+                                    horizontal: Dimension.padding24,
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: Dimension.padding24,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                      RadiusApp.circular24,
+                                    ),
+                                    color: AppColor.whiteGlass,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+
+                                    spacing: Dimension.spacing16,
+                                    children: [
+                                      Text('Email Address'),
+                                      AppFormField(
+                                        focusNode: _emailFocus,
+                                        onChange: (email) {
+                                          if (isValidEmail(email)) {
+                                            changeFocusInput(
+                                              email,
+                                              _passwordFocus,
+                                            );
+                                          }
+                                        },
+                                        label: 'Email',
+                                        controller: _emailController,
+                                        keyboardType: TextInputType.emailAddress,
+                                        icon: Icon(Icons.email_outlined),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter your email';
+                                          }
+                                          if (!isValidEmail(value)) {
+                                            return 'Please enter a valid email';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+
+                                      Text('Email Address'),
+                                      AppFormField(
+                                        textInputAction: TextInputAction.done,
+                                        focusNode: _passwordFocus,
+                                        onChange: (password) {
+                                          if (password != null &&
+                                              password.length >= 6) {
+                                            changeFocusInput(
+                                              password,
+                                              _loginFocus,
+                                            );
+                                          }
+                                        },
+                                        label: 'Password',
+                                        controller: _passwordController,
+                                        isPassword: true,
+                                        icon: Icon(Icons.lock_outline),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter your password';
+                                          }
+                                          if (value.length < 6) {
+                                            return 'Password must be at least 6 characters';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(height: 8),
+                                      LoginButton(
+                                        // handleLogin: _handleLogin,
+                                        loginFocus: _loginFocus,
+                                      ),
+                                      LoginBottomSection(),
+                                    ],
+                                  ),
                                 ),
-                                color: AppColor.whiteGlass,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                            
-                                spacing: Dimension.spacing16,
-                                children: [
-                                  Text('Email Address'),
-                                  AppFormField(
-                                    focusNode: _emailFocus,
-                                    onChange: (email) {
-                                      if (isValidEmail(email)) {
-                                        changeFocusInput(email, _passwordFocus);
-                                      }
-                                    },
-                                    label: 'Email',
-                                    controller: _emailController,
-                                    keyboardType: TextInputType.emailAddress,
-                                    icon: Icon(Icons.email_outlined),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter your email';
-                                      }
-                                      if (!isValidEmail(value)) {
-                                        return 'Please enter a valid email';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                            
-                                  Text('Email Address'),
-                                  AppFormField(
-                                    textInputAction: TextInputAction.done,
-                                    focusNode: _passwordFocus,
-                                    onChange: (password) {
-                                      if (password != null &&
-                                          password.length >= 6) {
-                                        changeFocusInput(password, _loginFocus);
-                                      }
-                                    },
-                                    label: 'Password',
-                                    controller: _passwordController,
-                                    isPassword: true,
-                                    icon: Icon(Icons.lock_outline),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter your password';
-                                      }
-                                      if (value.length < 6) {
-                                        return 'Password must be at least 6 characters';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  const SizedBox(height: 8),
-                                  LoginButton(
-                                    // handleLogin: _handleLogin,
-                                    loginFocus: _loginFocus,
-                                  ),
-                                  LoginBottomSection(),
-                                ],
                               ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     ),
