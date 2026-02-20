@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.appTheme,
       // initialRoute: AppRoute.HomeTab.name,
-      initialRoute: AppRoute.LoginScreen.name,
+      initialRoute: AppRoute.HomeTab.name,
       routes: routs,
     );
   }
