@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:money/features/home/presentation/providers/home_providers.dart';
 
 import '../../../../../../core/colors/app_color.dart';
+import '../home_screen/add_transaction_dialog.dart';
 
 class FloatingButton extends StatelessWidget {
   const FloatingButton({super.key});
@@ -26,15 +29,24 @@ class FloatingButton extends StatelessWidget {
       ),
 
       child: FloatingActionButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(360),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(360)),
         mini: true,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
-        onPressed: () {},
+        onPressed: () {
+          final categories = context.read<CategoryNotifier>().categories;
+          AddTransactionDialog.show(
+            context,
+            userId: 'test_user_123', // TODO: Get from FirebaseAuth
+            categories: categories,
+            onTransactionAdded: (transaction) {
+              context.read<TransactionNotifier>().addTransaction(transaction);
+              Navigator.of(context).pop();
+            },
+          );
+        },
 
         child: Icon(Icons.add),
       ),

@@ -8,8 +8,11 @@ class AppBottomNavBar extends StatelessWidget {
   final OnClick onClick;
   final int currentIndex;
 
-  const AppBottomNavBar(
-      {super.key, required this.onClick, required this.currentIndex});
+  const AppBottomNavBar({
+    super.key,
+    required this.onClick,
+    required this.currentIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,23 +33,21 @@ class AppBottomNavBar extends StatelessWidget {
               icon: Icon(Icons.pie_chart_outline),
               label: "Analytics",
             ),
-            // const SizedBox(width: 0,),
 
             RepaintBoundary(child: FloatingButton()),
 
             NavigationDestination(
-              icon: Icon(Icons.history_sharp),
-              label: "History",
+              icon: Icon(Icons.category_outlined),
+              label: "Categories",
             ),
-
 
             NavigationDestination(
               icon: Icon(Icons.description_rounded),
-              label: "Profile",
+              label: "Reports",
             ),
           ],
-        ),)
-      ,
+        ),
+      ),
     );
   }
 }
