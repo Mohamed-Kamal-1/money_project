@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "786178836835",
+    "project_id": "money-traking-678b4",
+    "storage_bucket": "money-traking-678b4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786178836835:android:3402d7fbc8b170c66aeb56",
+        "android_client_info": {
+          "package_name": "com.example.money"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "786178836835-c7fcunmi8hq2iam7okqeolbq811vg7vr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.money",
+            "certificate_hash": "830825e896f966089c15af8061cde2804a1cbbbc"
+          }
+        },
+        {
+          "client_id": "786178836835-002q4712cur5dqta3gf7g5l0fu8mt91n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3cinRZIDHhELqS0weeAAtBGiHpPu3yz8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "786178836835-002q4712cur5dqta3gf7g5l0fu8mt91n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "786178836835-p7obnhj3fgcckid90v6da6qdga209pl1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.money"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
