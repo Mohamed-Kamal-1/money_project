@@ -42,4 +42,5 @@ abstract class Dimension {
   static const double circular32 = 32;
   static const double circular16 = 16;
   static const double circular12 = 12;
+  static const double circular8 = 8;
 }

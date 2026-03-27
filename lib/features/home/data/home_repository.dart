@@ -3,7 +3,7 @@ import 'package:money/features/home/domain/models/transaction_model.dart';
 import 'package:money/features/home/domain/models/user_settings_model.dart';
 import 'package:money/features/home/domain/models/monthly_report_model.dart';
 
-abstract interface class HomeRepository {
+abstract interface class HomeRepositoryOld {
   // ==================== TRANSACTIONS ====================
   Future<String> addTransaction(AppTransaction transaction);
   Future<void> updateTransaction(AppTransaction transaction);

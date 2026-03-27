@@ -51,19 +51,21 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_ANDROID_API_KEY',
-    appId: 'YOUR_ANDROID_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyD3cinRZIDHhELqS0weeAAtBGiHpPu3yz8',
+    appId: '1:786178836835:android:3402d7fbc8b170c66aeb56',
+    messagingSenderId: '786178836835',
+    projectId: 'money-traking-678b4',
+    storageBucket: 'money-traking-678b4.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: 'YOUR_IOS_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyCj71ovwbO5TOLL46kw8nNWSOK1cIRAiPM',
+    appId: '1:786178836835:ios:68e8504f53f5b5fc6aeb56',
+    messagingSenderId: '786178836835',
+    projectId: 'money-traking-678b4',
+    storageBucket: 'money-traking-678b4.firebasestorage.app',
+    androidClientId: '786178836835-c7fcunmi8hq2iam7okqeolbq811vg7vr.apps.googleusercontent.com',
+    iosClientId: '786178836835-p7obnhj3fgcckid90v6da6qdga209pl1.apps.googleusercontent.com',
     iosBundleId: 'com.example.money',
   );
 
@@ -77,10 +79,13 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'YOUR_WINDOWS_API_KEY',
-    appId: 'YOUR_WINDOWS_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyD29xvzYhU4ZDUBUzm4tWLzsr7uIfhJ-nw',
+    appId: '1:786178836835:web:01f129aeb791551a6aeb56',
+    messagingSenderId: '786178836835',
+    projectId: 'money-traking-678b4',
+    authDomain: 'money-traking-678b4.firebaseapp.com',
+    storageBucket: 'money-traking-678b4.firebasestorage.app',
+    measurementId: 'G-B8704KE8WY',
   );
+
 }

@@ -7,7 +7,7 @@ class AppTransaction {
   final String categoryName;
   final double amount;
   final String type; // 'income' or 'expense'
-  final String description;
+  final String description; // خليناها اختيارية في الـ Constructor لراحة المستخدم
   final DateTime date;
   final String? notes;
   final DateTime createdAt;
@@ -19,13 +19,14 @@ class AppTransaction {
     required this.categoryName,
     required this.amount,
     this.type = 'expense',
-    required this.description,
-    required this.date,
+    this.description = '', // قيمة افتراضية عشان الـ Dialog مش بياخد وصف حالياً
+    DateTime? date,
     this.notes,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  })  : date = date ?? DateTime.now(),
+        createdAt = createdAt ?? DateTime.now();
 
-  // Convert to JSON for Firestore
+  // تحويل لـ JSON عشان Firestore
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
@@ -40,28 +41,31 @@ class AppTransaction {
     };
   }
 
-  // Create from Firestore document
+  // بناء الكائن من بيانات Firestore
   factory AppTransaction.fromJson(Map<String, dynamic> json, String id) {
     return AppTransaction(
       id: id,
       userId: json['userId'] as String? ?? '',
-      categoryId: json['categoryId'] as String? ?? '',
-      categoryName: json['categoryName'] as String? ?? '',
+      categoryId: json['categoryId'] as String? ?? 'uncategorized',
+      categoryName: json['categoryName'] as String? ?? 'General',
       amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
       type: json['type'] as String? ?? 'expense',
       description: json['description'] as String? ?? '',
-      date: (json['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      date: json['date'] is Timestamp
+          ? (json['date'] as Timestamp).toDate()
+          : DateTime.now(),
       notes: json['notes'] as String?,
-      createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: json['createdAt'] is Timestamp
+          ? (json['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
-  // Create from DocumentSnapshot
   factory AppTransaction.fromFirestore(DocumentSnapshot doc) {
     return AppTransaction.fromJson(doc.data() as Map<String, dynamic>, doc.id);
   }
 
-  // Copy with method
+  // الـ CopyWith مهم جداً للـ Cubit لو حبيت تعدل حالة معينة
   AppTransaction copyWith({
     String? id,
     String? userId,

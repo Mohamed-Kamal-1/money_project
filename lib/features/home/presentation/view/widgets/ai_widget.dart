@@ -7,7 +7,7 @@ import '../../../../../../core/widgets_for_all_app/financial_card.dart';
 
 // 1. The "This Month" Expense Card
 class MonthlyExpenseCard extends StatelessWidget {
-  const MonthlyExpenseCard({super.key});
+  const MonthlyExpenseCard({super.key, required double current, required double previous});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class MonthlyExpenseCard extends StatelessWidget {
 
 // 2. The Split Row (Top Category & Transactions)
 class FinancialStatsGrid extends StatelessWidget {
-  const FinancialStatsGrid({super.key});
+  const FinancialStatsGrid({super.key, required String topCategory, required double topAmount, required int transactions});
 
   @override
   Widget build(BuildContext context) {

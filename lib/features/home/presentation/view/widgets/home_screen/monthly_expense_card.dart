@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
-
 import '../../../../../../core/colors/app_color.dart';
 import '../../../../../../core/dimensions/Dimension_app.dart';
 import '../../../../../../core/extensions/theme_extension.dart';
 import '../../../../../../core/widgets_for_all_app/financial_card.dart';
 
 class MonthlyExpenseCard extends StatelessWidget {
-  const MonthlyExpenseCard({super.key});
+  final double currentMonthExpenses;
+  final double lastMonthExpenses;
+
+  const MonthlyExpenseCard({
+    super.key,
+    required this.currentMonthExpenses,
+    required this.lastMonthExpenses,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // حساب نسبة التغير ديناميكيًا
+    double percentageChange = 0;
+    if (lastMonthExpenses > 0) {
+      percentageChange = ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses) * 100;
+    }
+
+    final bool isIncreased = currentMonthExpenses > lastMonthExpenses;
+
     return FinancialCard(
       height: Dimension.heightCard145,
       width: double.infinity,
@@ -22,27 +36,28 @@ class MonthlyExpenseCard extends StatelessWidget {
           children: [
             Text('This Month', style: context.fonts.bodyMedium),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Dimension.spacing8,
-                vertical: 4,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColor.deepJungleGreen,
+                // اللون يتغير أحمر لو المصاريف زادت، أخضر لو قلت
+                color: isIncreased ? AppColor.lightRed.withOpacity(0.2) : AppColor.deepJungleGreen,
                 borderRadius: BorderRadius.circular(Dimension.circular12),
               ),
               child: Text(
-                '8.9%',
-                style: context.fonts.labelSmall,
+                '${percentageChange.abs().toStringAsFixed(1)}%',
+                style: context.fonts.labelSmall?.copyWith(
+                  color: isIncreased ? AppColor.lightRed : AppColor.white,
+                ),
               ),
             ),
           ],
         ),
+        const SizedBox(height: Dimension.spacing8),
         Text(
-          '\$2,847.50',
+          '\$${currentMonthExpenses.toStringAsFixed(2)}',
           style: context.fonts.displayMedium,
         ),
         Text(
-          'vs \$3,124.80 last month',
+          'vs \$${lastMonthExpenses.toStringAsFixed(2)} last month',
           style: context.fonts.bodyMedium?.copyWith(
             color: AppColor.gray,
             fontSize: 12,
