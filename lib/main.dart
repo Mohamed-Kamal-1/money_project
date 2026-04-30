@@ -10,7 +10,7 @@ import 'features/home/presentation/view/home_tab.dart';
 import 'firebase_options.dart';
 
 const String kUserId =
-    'test_user_123'; // TODO: Replace with FirebaseAuth.instance.currentUser!.uid
+    'test_user_123';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
