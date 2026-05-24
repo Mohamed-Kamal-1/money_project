@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:money/core/colors/app_color.dart';
-import 'package:money/core/dimensions/Dimension_app.dart';
+import 'package:money/core/dimensions/dimension_app.dart';
 import 'package:money/core/extensions/theme_extension.dart';
 import 'package:money/features/home/presentation/providers/home_providers.dart';
 import 'package:money/features/home/presentation/view/settings_screen.dart';

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:money/core/dimensions/Dimension_app.dart';
+import 'package:money/core/dimensions/dimension_app.dart';
 import 'package:money/features/home/presentation/view/widgets/home_screen/financial_health_card.dart';
 import 'package:money/features/home/presentation/view/widgets/home_screen/financial_overview_card.dart';
-import 'package:money/features/home/presentation/view/widgets/home_screen/financial_stats_grid.dart';
 import 'package:money/features/home/presentation/view/widgets/home_screen/monthly_expense_card.dart';
 import 'package:money/features/home/presentation/view/widgets/home_screen/quick_actions_section.dart';
 import 'package:intl/intl.dart';
@@ -38,7 +37,7 @@ class HomeScreen extends StatelessWidget {
                   const FinancialOverviewCard(),
                   const FinancialHealthCard(),
                   const MonthlyExpenseCard(),
-                  const FinancialStatsGrid(),
+                  // const FinancialStatsGrid(),
                   const QuickActionsSection(),
                 ],
               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../core/dimensions/Dimension_app.dart';
+import '../../../../../../core/dimensions/dimension_app.dart';
 import '../../../../../../core/extensions/theme_extension.dart';
 import '../../../../../../core/widgets_for_all_app/financial_card.dart';
 

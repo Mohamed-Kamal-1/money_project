@@ -18,6 +18,11 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
+  Future<String> addTransactionWithBalanceUpdate(AppTransaction transaction) {
+    return _firestoreService.addTransactionWithBalanceUpdate(transaction);
+  }
+
+  @override
   Future<void> updateTransaction(AppTransaction transaction) {
     return _firestoreService.updateTransaction(transaction);
   }

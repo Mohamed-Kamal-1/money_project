@@ -6,7 +6,7 @@ import 'package:money/features/home/presentation/providers/home_providers.dart';
 import 'package:money/main.dart';
 
 import '../../../../core/colors/app_color.dart';
-import '../../../../core/dimensions/Dimension_app.dart';
+import '../../../../core/dimensions/dimension_app.dart';
 import '../../../../core/extensions/theme_extension.dart';
 import '../../../../core/widgets_for_all_app/gradient_button.dart';
 import 'widgets/category_insights.dart';

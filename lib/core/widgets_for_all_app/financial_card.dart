@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money/core/dimensions/Dimension_app.dart';
+import 'package:money/core/dimensions/dimension_app.dart';
 
 import '../dimensions/radius_app.dart';
 

@@ -16,6 +16,51 @@ class FirestoreService {
 
   // ==================== TRANSACTION OPERATIONS ====================
 
+  /// Create a new transaction AND update user balance atomically using batch
+  Future<String> addTransactionWithBalanceUpdate(AppTransaction transaction) async {
+    if (transaction.userId.isEmpty) {
+      throw Exception('No user linked to transaction. Please authenticate.');
+    }
+
+    try {
+      final batch = _firestore.batch();
+
+      // 1. Create transaction document
+      final transactionDocRef = _firestore.collection(transactionsCollection).doc();
+      batch.set(transactionDocRef, transaction.toJson());
+
+      // 2. Get current settings document
+      final settingsDocRef = _firestore.collection(settingsCollection).doc(transaction.userId);
+      final settingsDoc = await settingsDocRef.get();
+
+      double currentBalance = 0.0;
+      if (settingsDoc.exists) {
+        currentBalance = (settingsDoc.data()?['balance'] as num?)?.toDouble() ?? 0.0;
+      }
+
+      // 3. Calculate new balance
+      double newBalance;
+      if (transaction.type == 'income') {
+        newBalance = currentBalance + transaction.amount;
+      } else {
+        newBalance = currentBalance - transaction.amount;
+      }
+
+      // 4. Update balance in settings document
+      batch.set(settingsDocRef, {
+        'balance': newBalance,
+        'updatedAt': Timestamp.fromDate(DateTime.now()),
+      }, SetOptions(merge: true));
+
+      // 5. Commit the batch
+      await batch.commit();
+
+      return transactionDocRef.id;
+    } catch (e) {
+      throw Exception('Failed to add transaction and update balance: $e');
+    }
+  }
+
   /// Create a new transaction
   Future<String> addTransaction(AppTransaction transaction) async {
     try {
@@ -30,6 +75,9 @@ class FirestoreService {
 
   /// Update an existing transaction
   Future<void> updateTransaction(AppTransaction transaction) async {
+    if (transaction.userId.isEmpty) {
+      throw Exception('No user linked to transaction. Please authenticate.');
+    }
     try {
       if (transaction.id == null) throw Exception('Transaction ID is required');
       await _firestore

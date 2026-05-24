@@ -131,6 +131,24 @@ class TransactionNotifier extends ChangeNotifier {
     }
   }
 
+  Future<String> addTransactionWithBalanceUpdate(AppTransaction transaction) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final id = await _repository.addTransactionWithBalanceUpdate(transaction);
+      _isLoading = false;
+      notifyListeners();
+      return id;
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
+    }
+  }
+
   Future<void> updateTransaction(AppTransaction transaction) async {
     try {
       _isLoading = true;

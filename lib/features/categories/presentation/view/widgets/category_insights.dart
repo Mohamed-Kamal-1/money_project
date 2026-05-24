@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/colors/app_color.dart';
-import '../../../../../core/dimensions/Dimension_app.dart';
+import '../../../../../core/dimensions/dimension_app.dart';
 import '../../../../../core/extensions/theme_extension.dart';
 
 class CategoryInsights extends StatelessWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/colors/app_color.dart';
-import '../../../../../../core/dimensions/Dimension_app.dart';
+import '../../../../../../core/dimensions/dimension_app.dart';
 import '../../../../../../core/extensions/theme_extension.dart';
 import '../../../../../../core/widgets_for_all_app/financial_card.dart';
 
@@ -38,16 +38,16 @@ class MonthlyExpenseCard extends StatelessWidget {
           ],
         ),
         Text(
-          '\$2,847.50',
+          '\$',
           style: context.fonts.displayMedium,
         ),
-        Text(
-          'vs \$3,124.80 last month',
-          style: context.fonts.bodyMedium?.copyWith(
-            color: AppColor.gray,
-            fontSize: 12,
-          ),
-        ),
+        // Text(
+        //   'vs \$3,124.80 last month',
+        //   style: context.fonts.bodyMedium?.copyWith(
+        //     color: AppColor.gray,
+        //     fontSize: 12,
+        //   ),
+        // ),
       ],
     );
   }

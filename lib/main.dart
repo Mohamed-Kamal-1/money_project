@@ -9,8 +9,7 @@ import 'features/home/presentation/providers/home_providers.dart';
 import 'features/home/presentation/view/home_tab.dart';
 import 'firebase_options.dart';
 
-const String kUserId =
-    'test_user_123';
+const String kUserId = 'njjgYe3zMmYLcwzyodfFUB2G6eG3';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +28,7 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<FirestoreService>(create: (_) => FirestoreService()),
         ProxyProvider<FirestoreService, HomeRepositoryImpl>(
-          update: (_, firestoreService, __) =>
+          update: (_, firestoreService, previous) =>
               HomeRepositoryImpl(firestoreService),
         ),
         ChangeNotifierProxyProvider<HomeRepositoryImpl, BalanceNotifier>(

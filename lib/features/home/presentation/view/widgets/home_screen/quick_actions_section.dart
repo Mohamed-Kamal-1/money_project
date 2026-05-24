@@ -6,7 +6,7 @@ import 'package:money/features/home/presentation/providers/home_providers.dart';
 import 'package:money/main.dart';
 
 import '../../../../../../core/colors/app_color.dart';
-import '../../../../../../core/dimensions/Dimension_app.dart';
+import '../../../../../../core/dimensions/dimension_app.dart';
 import '../../../../../../core/extensions/theme_extension.dart';
 
 class QuickActionsSection extends StatelessWidget {
@@ -42,17 +42,9 @@ class QuickActionsSection extends StatelessWidget {
                       try {
                         await context
                             .read<TransactionNotifier>()
-                            .addTransaction(transaction);
-                        // Auto-update balance
+                            .addTransactionWithBalanceUpdate(transaction);
+                        // Reload analytics
                         if (context.mounted) {
-                          context
-                              .read<BalanceNotifier>()
-                              .adjustBalanceForTransaction(
-                                kUserId,
-                                transaction.amount,
-                                transaction.type,
-                              );
-                          // Reload analytics
                           final now = DateTime.now();
                           context.read<AnalyticsNotifier>().loadAnalytics(
                             kUserId,

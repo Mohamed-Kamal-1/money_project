@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:money/features/home/presentation/providers/home_providers.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../../../core/colors/app_color.dart';
 import '../home_screen/add_transaction_dialog.dart';
@@ -37,13 +38,13 @@ class FloatingButton extends StatelessWidget {
         foregroundColor: Colors.white,
         onPressed: () {
           final categories = context.read<CategoryNotifier>().categories;
+          final userId = FirebaseAuth.instance.currentUser?.uid ?? 'njjgYe3zMmYLcwzyodfFUB2G6eG3';
           AddTransactionDialog.show(
             context,
-            userId: 'test_user_123', // TODO: Get from FirebaseAuth
+            userId: userId,
             categories: categories,
             onTransactionAdded: (transaction) {
-              context.read<TransactionNotifier>().addTransaction(transaction);
-              Navigator.of(context).pop();
+              context.read<TransactionNotifier>().addTransactionWithBalanceUpdate(transaction);
             },
           );
         },

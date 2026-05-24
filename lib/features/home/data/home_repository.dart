@@ -6,6 +6,7 @@ import 'package:money/features/home/domain/models/monthly_report_model.dart';
 abstract interface class HomeRepository {
   // ==================== TRANSACTIONS ====================
   Future<String> addTransaction(AppTransaction transaction);
+  Future<String> addTransactionWithBalanceUpdate(AppTransaction transaction);
   Future<void> updateTransaction(AppTransaction transaction);
   Future<void> deleteTransaction(String transactionId);
   Future<AppTransaction?> getTransaction(String transactionId);

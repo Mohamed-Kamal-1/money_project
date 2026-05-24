@@ -5,7 +5,7 @@ import 'package:money/features/home/presentation/providers/home_providers.dart';
 import 'package:money/main.dart';
 
 import '../../../../core/colors/app_color.dart';
-import '../../../../core/dimensions/Dimension_app.dart';
+import '../../../../core/dimensions/dimension_app.dart';
 import '../../../../core/extensions/theme_extension.dart';
 
 class AnalysisScreen extends StatefulWidget {
@@ -166,7 +166,8 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
     final sections = <PieChartSectionData>[];
     int colorIndex = 0;
-    categorySpending.forEach((name, value) {
+    for (final entry in categorySpending.entries) {
+      final value = entry.value;
       final percentage = analytics.monthTotal == 0
           ? 0.0
           : (value / analytics.monthTotal) * 100;
@@ -184,7 +185,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         ),
       );
       colorIndex++;
-    });
+    }
 
     // Empty state
     if (sections.isEmpty) {
@@ -269,10 +270,10 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     // Build trend spots from category data
     final spots = <FlSpot>[];
     int i = 0;
-    categorySpending.values.forEach((value) {
+    for (final value in categorySpending.values) {
       spots.add(FlSpot(i.toDouble(), value));
       i++;
-    });
+    }
 
     // Fallback
     if (spots.isEmpty) {

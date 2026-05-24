@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money/core/colors/app_color.dart';
-import 'package:money/core/dimensions/Dimension_app.dart';
+import 'package:money/core/dimensions/dimension_app.dart';
 import 'package:money/core/extensions/theme_extension.dart';
 import 'package:money/core/widgets_for_all_app/gradient_button.dart';
 import 'package:money/features/home/domain/models/category_model.dart';

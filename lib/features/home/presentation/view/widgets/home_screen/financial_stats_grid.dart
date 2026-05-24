@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import '../../../../../../core/colors/app_color.dart';
-import '../../../../../../core/dimensions/Dimension_app.dart';
+import '../../../../../../core/dimensions/dimension_app.dart';
 import '../../../../../../core/widgets_for_all_app/state_sard.dart';
 
 class FinancialStatsGrid extends StatelessWidget {

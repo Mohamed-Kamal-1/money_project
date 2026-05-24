@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money/features/home/domain/models/category_model.dart';
 
 import '../../../../../core/colors/app_color.dart';
-import '../../../../../core/dimensions/Dimension_app.dart';
+import '../../../../../core/dimensions/dimension_app.dart';
 import '../../../../../core/extensions/theme_extension.dart';
 import '../../../../../core/widgets_for_all_app/gradient_button.dart';
 
@@ -125,7 +125,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
       final category = Category(
         userId: widget.userId,
         name: name,
-        colorValue: _selectedColor.value,
+        colorValue: _selectedColor.toARGB32(),
         iconName: _getIconName(_selectedIcon),
         budget: budget,
       );

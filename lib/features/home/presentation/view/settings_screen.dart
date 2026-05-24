@@ -6,7 +6,7 @@ import 'package:money/features/home/presentation/providers/home_providers.dart';
 import 'package:money/main.dart';
 
 import '../../../../core/colors/app_color.dart';
-import '../../../../core/dimensions/Dimension_app.dart';
+import '../../../../core/dimensions/dimension_app.dart';
 import '../../../../core/extensions/theme_extension.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -130,7 +130,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               trailing: Switch(
                 value: _darkMode,
                 onChanged: _toggleDarkMode,
-                activeColor: AppColor.blueStart,
+                activeThumbColor: AppColor.blueStart,
               ),
             ),
             const SizedBox(height: 8),
@@ -145,7 +145,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               trailing: Switch(
                 value: _notifications,
                 onChanged: _toggleNotifications,
-                activeColor: AppColor.blueStart,
+                activeThumbColor: AppColor.blueStart,
               ),
             ),
             const SizedBox(height: 8),
@@ -279,7 +279,7 @@ class _SettingTile extends StatelessWidget {
                 ],
               ),
             ),
-            if (trailing != null) trailing!,
+            ?trailing,
           ],
         ),
       ),
