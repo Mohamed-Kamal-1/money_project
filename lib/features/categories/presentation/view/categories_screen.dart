@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money/features/categories/presentation/view/widgets/category_list_item.dart';
 
 import '../../../../core/colors/app_color.dart';
-import '../../../../core/dimensions/Dimension_app.dart';
+import '../../../../core/dimensions/dimension_app.dart';
 import '../../../../core/extensions/theme_extension.dart';
 import '../../../../core/widgets_for_all_app/gradient_button.dart';
 import 'widgets/category_insights.dart';

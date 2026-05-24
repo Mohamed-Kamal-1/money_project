@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-import '../dimensions/Dimension_app.dart';
+import '../dimensions/dimension_app.dart';
 import '../extensions/theme_extension.dart';
 import 'financial_card.dart';
 

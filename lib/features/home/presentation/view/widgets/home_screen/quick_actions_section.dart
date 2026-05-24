@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money/features/home/presentation/view/widgets/home_screen/quick_actions_button.dart';
 
 import '../../../../../../core/colors/app_color.dart';
-import '../../../../../../core/dimensions/Dimension_app.dart';
+import '../../../../../../core/dimensions/dimension_app.dart';
 import '../../../../../../core/extensions/theme_extension.dart';
 
 class QuickActionsSection extends StatelessWidget {

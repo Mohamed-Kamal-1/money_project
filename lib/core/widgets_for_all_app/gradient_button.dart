@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../colors/app_color.dart';
-import '../dimensions/Dimension_app.dart';
+import '../dimensions/dimension_app.dart';
 
 class GradientButton extends StatelessWidget {
   final String text;

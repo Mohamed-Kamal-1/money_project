@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money/core/dimensions/Dimension_app.dart';
+import 'package:money/core/dimensions/dimension_app.dart';
 import 'package:money/features/home/presentation/view/widgets/home_screen/financial_health_card.dart';
 import 'package:money/features/home/presentation/view/widgets/home_screen/financial_overview_card.dart';
 import 'package:money/features/home/presentation/view/widgets/home_screen/financial_stats_grid.dart';
