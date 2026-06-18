@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:money/features/home/presentation/view/widgets/home_screen/add_transaction_dialog.dart';
-import 'package:money/features/home/presentation/view/widgets/home_screen/quick_actions_button.dart';
-import 'package:provider/provider.dart';
-import 'package:money/features/home/presentation/providers/home_providers.dart';
-import 'package:money/main.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../core/colors/app_color.dart';
 import '../../../../../../core/dimensions/dimension_app.dart';
 import '../../../../../../core/extensions/theme_extension.dart';
+import '../../../../../analytics/presentation/cubit/analytics_cubit.dart';
+import '../../../../../categories/domain/entities/category.dart';
+import '../../../../../categories/presentation/cubit/category_cubit.dart';
+import '../../../../../categories/presentation/cubit/category_state.dart';
+import '../../../../../transaction/presentation/cubit/transaction/transaction_cubit.dart';
+import 'add_transaction_dialog.dart';
+import 'quick_actions_button.dart';
 
 class QuickActionsSection extends StatelessWidget {
-  const QuickActionsSection({super.key});
+  final String userId;
+
+  const QuickActionsSection({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -31,23 +36,26 @@ class QuickActionsSection extends StatelessWidget {
             Expanded(
               child: QuickActionsButton(
                 onTap: () {
-                  final categories = context
-                      .read<CategoryNotifier>()
-                      .categories;
+                  // نستخدم CategoryCubit للحصول على الفئات الحالية
+                  final state = context.read<CategoryCubit>().state;
+                  List<Category> categories = [];
+                  if (state is CategoryLoaded) {
+                    categories = state.categories;
+                  }
                   AddTransactionDialog.show(
                     context,
-                    userId: kUserId,
+                    userId: userId,
                     categories: categories,
                     onTransactionAdded: (transaction) async {
                       try {
                         await context
-                            .read<TransactionNotifier>()
+                            .read<TransactionCubit>()
                             .addTransactionWithBalanceUpdate(transaction);
-                        // Reload analytics
+                        // إعادة تحميل التحليلات بعد الإضافة
                         if (context.mounted) {
                           final now = DateTime.now();
-                          context.read<AnalyticsNotifier>().loadAnalytics(
-                            kUserId,
+                          context.read<AnalyticsCubit>().loadAnalytics(
+                            userId,
                             now.month,
                             now.year,
                           );
@@ -82,7 +90,6 @@ class QuickActionsSection extends StatelessWidget {
                 text: 'History',
               ),
             ),
-
             Expanded(
               child: QuickActionsButton(
                 onTap: () {

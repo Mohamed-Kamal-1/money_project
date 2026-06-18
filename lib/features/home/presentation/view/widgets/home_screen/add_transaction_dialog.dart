@@ -4,8 +4,9 @@ import 'package:money/core/colors/app_color.dart';
 import 'package:money/core/dimensions/dimension_app.dart';
 import 'package:money/core/extensions/theme_extension.dart';
 import 'package:money/core/widgets_for_all_app/gradient_button.dart';
-import 'package:money/features/home/domain/models/category_model.dart';
-import 'package:money/features/home/domain/models/transaction_model.dart';
+
+import '../../../../../categories/domain/entities/category.dart';
+import '../../../../../transaction/domain/entities/transaction.dart';
 
 class AddTransactionDialog extends StatefulWidget {
   final String userId;
@@ -131,7 +132,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
       final transaction = AppTransaction(
         userId: widget.userId,
         categoryId: _selectedCategory!.id ?? '',
-        categoryName: _selectedCategory!.name,
+        categoryName: _selectedCategory?.name ?? 'unKnown',
         amount: amount,
         type: _transactionType,
         description: _descriptionController.text,
@@ -408,12 +409,17 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                                     width: 12,
                                     height: 12,
                                     decoration: BoxDecoration(
-                                      color: cat.color,
+                                      color: Color(
+                                        int.parse(
+                                          cat.color ?? 'unKnown',
+                                          radix: 16,
+                                        ),
+                                      ),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
                                   const SizedBox(width: 12),
-                                  Text(cat.name),
+                                  Text(cat.name ?? 'unKnown'),
                                 ],
                               ),
                             );

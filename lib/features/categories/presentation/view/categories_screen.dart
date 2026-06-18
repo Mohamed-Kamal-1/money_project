@@ -1,18 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:money/features/categories/presentation/view/widgets/add_category_dialog.dart';
-import 'package:money/features/categories/presentation/view/widgets/category_list_item.dart';
-import 'package:money/features/home/presentation/providers/home_providers.dart';
-import 'package:money/main.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/colors/app_color.dart';
 import '../../../../core/dimensions/dimension_app.dart';
 import '../../../../core/extensions/theme_extension.dart';
 import '../../../../core/widgets_for_all_app/gradient_button.dart';
-import 'widgets/category_insights.dart';
+import '../../../analytics/presentation/cubit/analytics_cubit.dart';
+import '../../../analytics/presentation/cubit/analytics_state.dart';
+import '../../../categories/presentation/view/widgets/add_category_dialog.dart';
+import '../../../categories/presentation/view/widgets/category_insights.dart';
+import '../../../categories/presentation/view/widgets/category_list_item.dart';
+import '../cubit/category_cubit.dart';
+import '../cubit/category_state.dart';
 
-class CategoriesScreen extends StatelessWidget {
-  const CategoriesScreen({super.key});
+class CategoriesScreen extends StatefulWidget {
+  final String userId;
+
+  const CategoriesScreen({super.key, required this.userId});
+
+  @override
+  State<CategoriesScreen> createState() => _CategoriesScreenState();
+}
+
+class _CategoriesScreenState extends State<CategoriesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<CategoryCubit>().listenToCategories(widget.userId);
+    final now = DateTime.now();
+    context.read<AnalyticsCubit>().loadAnalytics(
+      widget.userId,
+      now.month,
+      now.year,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,148 +43,162 @@ class CategoriesScreen extends StatelessWidget {
         vertical: Dimension.padding16,
       ),
       child: SafeArea(
-        child: Consumer2<CategoryNotifier, AnalyticsNotifier>(
-          builder: (context, categoryNotifier, analyticsNotifier, _) {
-            final categories = categoryNotifier.categories;
-            final categorySpending = analyticsNotifier.categorySpending;
-
-            double totalBudget = 0;
-            double totalSpent = 0;
-            for (final cat in categories) {
-              totalBudget += cat.budget ?? 0;
-              totalSpent += categorySpending[cat.name] ?? 0;
-            }
-
-            if (categoryNotifier.isLoading && categories.isEmpty) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColor.blueStart),
-              );
-            }
-
-            return CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: Dimension.spacing16,
-                    children: [
-                      // Header
-                      Text('Categories', style: context.fonts.headlineSmall),
-                      Text(
-                        'Manage your expense categories',
-                        style: context.fonts.bodyMedium?.copyWith(
-                          color: AppColor.gray,
-                        ),
-                      ),
-
-                      // Add Category Button
-                      GradientButton(
-                        text: 'Add Custom Category',
-                        icon: Icons.add,
-                        onTap: () {
-                          AddCategoryDialog.show(
-                            context,
-                            userId: kUserId,
-                            onCategoryAdded: (category) async {
-                              try {
-                                await context
-                                    .read<CategoryNotifier>()
-                                    .addCategory(category);
-                              } catch (e) {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Error: ${e.toString()}'),
-                                      backgroundColor: AppColor.lightRed,
-                                    ),
-                                  );
-                                }
-                              }
-                            },
-                          );
-                        },
-                      ),
-
-                      // Category List
-                      if (categories.isEmpty)
-                        Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: AppColor.bottomNavBarBackGround,
-                            borderRadius: BorderRadius.circular(
-                              Dimension.circular16,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Categories', style: context.fonts.headlineSmall),
+            const SizedBox(height: 4),
+            Text(
+              'Manage your expense categories',
+              style: context.fonts.bodyMedium?.copyWith(color: AppColor.gray),
+            ),
+            const SizedBox(height: 16),
+            GradientButton(
+              text: 'Add Custom Category',
+              icon: Icons.add,
+              onTap: () {
+                AddCategoryDialog.show(context, userId: widget.userId);
+              },
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: CustomScrollView(
+                slivers: [
+                  // Categories list
+                  BlocBuilder<CategoryCubit, CategoryState>(
+                    builder: (context, categoryState) {
+                      if (categoryState is CategoryLoading) {
+                        return const SliverFillRemaining(
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppColor.blueStart,
                             ),
                           ),
+                        );
+                      }
+                      if (categoryState is CategoryError) {
+                        return SliverFillRemaining(
                           child: Center(
                             child: Text(
-                              'No categories yet. Add your first one!',
-                              style: context.fonts.bodyMedium?.copyWith(
-                                color: AppColor.gray,
-                              ),
+                              'Error: ${categoryState.message}',
+                              style: const TextStyle(color: AppColor.lightRed),
                             ),
                           ),
-                        )
-                      else
-                        ...categories.map((cat) {
-                          final spent = categorySpending[cat.name] ?? 0;
-                          final icon = IconData(
-                            int.tryParse(cat.iconName) ??
-                                Icons.category.codePoint,
-                            fontFamily: 'MaterialIcons',
+                        );
+                      }
+                      if (categoryState is CategoryLoaded) {
+                        final categories = categoryState.categories;
+                        if (categories.isEmpty) {
+                          return const SliverFillRemaining(
+                            child: Center(
+                              child: Text(
+                                'No categories yet. Add your first one!',
+                              ),
+                            ),
                           );
-                          return CategoryListItem(
-                            icon: icon,
-                            iconBackgroundColor: cat.color,
-                            categoryName: cat.name,
-                            spent: spent,
-                            budget: cat.budget ?? 0,
-                            onDelete: () async {
-                              if (cat.id != null) {
-                                try {
-                                  await context
-                                      .read<CategoryNotifier>()
-                                      .deleteCategory(cat.id!);
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('"${cat.name}" deleted'),
-                                        backgroundColor: AppColor.emeraldGreen,
-                                      ),
-                                    );
-                                  }
-                                } catch (e) {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Error: ${e.toString()}'),
-                                        backgroundColor: AppColor.lightRed,
-                                      ),
-                                    );
-                                  }
-                                }
-                              }
-                            },
-                          );
-                        }),
-
-                      // Divider
-                      Container(height: 1, color: AppColor.borderGray),
-
-                      // Insights Section
-                      CategoryInsights(
-                        totalCategories: categories.length,
-                        totalBudget: totalBudget,
-                        totalSpent: totalSpent,
-                      ),
-
-                      // Bottom spacing for navigation bar
-                      const SizedBox(height: 80),
-                    ],
+                        }
+                        return BlocBuilder<AnalyticsCubit, AnalyticsState>(
+                          builder: (context, analyticsState) {
+                            // ✅ طباعة لتتبع الحالة
+                            print('Analytics state: $analyticsState');
+                            if (analyticsState is AnalyticsLoaded) {
+                              print(
+                                'Spending map: ${analyticsState.categorySpending}',
+                              );
+                            }
+                            Map<String, double> spending = {};
+                            if (analyticsState is AnalyticsLoaded) {
+                              spending = analyticsState.categorySpending;
+                            }
+                            return SliverList(
+                              delegate: SliverChildBuilderDelegate((
+                                context,
+                                index,
+                              ) {
+                                final cat = categories[index];
+                                final spent = spending[cat.name] ?? 0.0;
+                                final icon = IconData(
+                                  int.tryParse(cat.icon ?? 'unKnown') ??
+                                      Icons.category.codePoint,
+                                  fontFamily: 'MaterialIcons',
+                                );
+                                return CategoryListItem(
+                                  icon: icon,
+                                  iconBackgroundColor: Color(
+                                    int.parse(
+                                      cat.color ?? 'unKnown',
+                                      radix: 16,
+                                    ),
+                                  ),
+                                  categoryName: cat.name ?? 'unKnown',
+                                  spent: spent,
+                                  budget: cat.budget ?? 0,
+                                  onDelete: () async {
+                                    if (cat.id != null) {
+                                      await context
+                                          .read<CategoryCubit>()
+                                          .deleteCategory(cat.id!);
+                                    }
+                                  },
+                                );
+                              }, childCount: categories.length),
+                            );
+                          },
+                        );
+                      }
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    },
                   ),
-                ),
-              ],
-            );
-          },
+                  // Insights Section
+                  BlocBuilder<CategoryCubit, CategoryState>(
+                    builder: (context, categoryState) {
+                      if (categoryState is CategoryLoaded) {
+                        final categories = categoryState.categories;
+                        if (categories.isEmpty)
+                          return const SliverToBoxAdapter(
+                            child: SizedBox.shrink(),
+                          );
+                        double totalBudget = 0;
+                        for (final cat in categories) {
+                          totalBudget += cat.budget ?? 0;
+                        }
+                        return BlocBuilder<AnalyticsCubit, AnalyticsState>(
+                          builder: (context, analyticsState) {
+                            double totalSpent = 0;
+                            if (analyticsState is AnalyticsLoaded) {
+                              final spending = analyticsState.categorySpending;
+                              for (final cat in categories) {
+                                totalSpent += spending[cat.name] ?? 0;
+                              }
+                            }
+                            return SliverToBoxAdapter(
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 24),
+                                  Container(
+                                    height: 1,
+                                    color: AppColor.borderGray,
+                                  ),
+                                  const SizedBox(height: 24),
+                                  CategoryInsights(
+                                    totalCategories: categories.length,
+                                    totalBudget: totalBudget,
+                                    totalSpent: totalSpent,
+                                  ),
+                                  const SizedBox(height: 80),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

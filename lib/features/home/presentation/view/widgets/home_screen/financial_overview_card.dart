@@ -1,19 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:money/main.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../core/colors/app_color.dart';
 import '../../../../../../core/dimensions/dimension_app.dart';
 import '../../../../../../core/extensions/theme_extension.dart';
 import '../../../../../../core/widgets_for_all_app/financial_card.dart';
-import '../../../providers/home_providers.dart';
+import '../../../../../analytics/presentation/cubit/analytics_cubit.dart';
+import '../../../../../analytics/presentation/cubit/analytics_state.dart';
+import '../../../../../balance/presentation/cubit/balance_cubit.dart';
+import '../../../../../balance/presentation/cubit/balance_state.dart';
 
-class FinancialOverviewCard extends StatelessWidget {
-  const FinancialOverviewCard({super.key});
+class FinancialOverviewCard extends StatefulWidget {
+  final String userId;
+  const FinancialOverviewCard({super.key, required this.userId});
+
+  @override
+  State<FinancialOverviewCard> createState() => _FinancialOverviewCardState();
+}
+
+class _FinancialOverviewCardState extends State<FinancialOverviewCard> {
+  late final String userId;
+
+  @override
+  void initState() {
+    super.initState();
+    userId = widget.userId; // لاحقاً: context.read<AuthCubit>().state.userId
+    context.read<BalanceCubit>().listenToBalance(userId);
+    final now = DateTime.now();
+    context.read<AnalyticsCubit>().loadAnalytics(userId, now.month, now.year);
+  }
 
   void _showUpdateBalanceDialog(BuildContext context) {
     final controller = TextEditingController();
-    final balanceNotifier = context.read<BalanceNotifier>();
+    final balanceCubit = context.read<BalanceCubit>();
 
     showDialog(
       context: context,
@@ -57,19 +76,40 @@ class FinancialOverviewCard extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               final amount = double.tryParse(controller.text);
               if (amount != null) {
-                balanceNotifier.updateBalance(kUserId, amount);
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Balance updated to \$${amount.toStringAsFixed(2)}',
+                      'Updating balance to \$${amount.toStringAsFixed(2)}...',
                     ),
                     backgroundColor: AppColor.emeraldGreen,
                   ),
                 );
+                try {
+                  await balanceCubit.updateBalance(userId, amount);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Balance updated to \$${amount.toStringAsFixed(2)}',
+                        ),
+                        backgroundColor: AppColor.emeraldGreen,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error: ${e.toString()}'),
+                        backgroundColor: AppColor.lightRed,
+                      ),
+                    );
+                  }
+                }
               }
             },
             child: Text(
@@ -88,12 +128,14 @@ class FinancialOverviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => _showUpdateBalanceDialog(context),
-      child: Consumer2<BalanceNotifier, AnalyticsNotifier>(
-        builder: (context, balanceNotifier, analyticsNotifier, _) {
-          final balance = balanceNotifier.balance;
-          final expenses = analyticsNotifier.monthTotal;
-          final income = analyticsNotifier.monthIncome;
-
+      child: BlocBuilder<BalanceCubit, BalanceState>(
+        builder: (context, balanceState) {
+          double balance = 0.0;
+          if (balanceState is BalanceLoaded) {
+            balance = balanceState.balance;
+          } else if (balanceState is BalanceError) {
+            // يمكن إظهار رسالة خطأ صغيرة هنا إذا أردت
+          }
           return FinancialCard(
             height: Dimension.heightCard245,
             width: double.infinity,
@@ -116,64 +158,75 @@ class FinancialOverviewCard extends StatelessWidget {
                 '\$${balance.toStringAsFixed(2)}',
                 style: context.fonts.displayMedium,
               ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.min,
-                spacing: Dimension.spacing12,
-                children: [
-                  Expanded(
-                    child: FinancialCard(
-                      spacing: Dimension.spacing8,
-                      alignment: MainAxisAlignment.center,
-                      borderRadius: Dimension.circular16,
-                      height: Dimension.heightCard79,
-                      color: AppColor.secondaryGreen,
-                      children: [
-                        Text(
-                          textAlign: TextAlign.start,
-                          'Income',
-                          style: context.fonts.labelSmall?.copyWith(
-                            color: AppColor.darkTeal,
-                          ),
-                        ),
-                        Text(
-                          textAlign: TextAlign.end,
-                          '\$${income.toStringAsFixed(2)}',
-                          style: context.fonts.titleMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: FinancialCard(
-                      spacing: Dimension.spacing8,
-                      alignment: MainAxisAlignment.center,
-                      borderRadius: Dimension.circular16,
-                      height: Dimension.heightCard79,
-                      color: AppColor.secondaryGreen,
-                      children: [
-                        Text(
-                          'Expenses',
-                          style: context.fonts.labelSmall?.copyWith(
-                            color: AppColor.lightRed,
-                          ),
-                        ),
-                        Text(
-                          '\$${expenses.toStringAsFixed(2)}',
-                          style: context.fonts.titleMedium?.copyWith(
-                            color: AppColor.lightRed,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              _buildIncomeExpenseRow(context),
             ],
           );
         },
       ),
+    );
+  }
+
+  Widget _buildIncomeExpenseRow(BuildContext context) {
+    return BlocBuilder<AnalyticsCubit, AnalyticsState>(
+      builder: (context, analyticsState) {
+        double income = 0.0;
+        double expenses = 0.0;
+        if (analyticsState is AnalyticsLoaded) {
+          income = analyticsState.monthIncome;
+          expenses = analyticsState.monthTotal;
+        }
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          spacing: Dimension.spacing12,
+          children: [
+            Expanded(
+              child: FinancialCard(
+                spacing: Dimension.spacing8,
+                alignment: MainAxisAlignment.center,
+                borderRadius: Dimension.circular16,
+                height: Dimension.heightCard79,
+                color: AppColor.secondaryGreen,
+                children: [
+                  Text(
+                    'Income',
+                    style: context.fonts.labelSmall?.copyWith(
+                      color: AppColor.darkTeal,
+                    ),
+                  ),
+                  Text(
+                    '\$${income.toStringAsFixed(2)}',
+                    style: context.fonts.titleMedium,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: FinancialCard(
+                spacing: Dimension.spacing8,
+                alignment: MainAxisAlignment.center,
+                borderRadius: Dimension.circular16,
+                height: Dimension.heightCard79,
+                color: AppColor.secondaryGreen,
+                children: [
+                  Text(
+                    'Expenses',
+                    style: context.fonts.labelSmall?.copyWith(
+                      color: AppColor.lightRed,
+                    ),
+                  ),
+                  Text(
+                    '\$${expenses.toStringAsFixed(2)}',
+                    style: context.fonts.titleMedium?.copyWith(
+                      color: AppColor.lightRed,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -1,18 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:money/features/home/presentation/providers/home_providers.dart';
-import 'package:money/main.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/colors/app_color.dart';
 import '../../../../core/dimensions/dimension_app.dart';
 import '../../../../core/extensions/theme_extension.dart';
+import '../../../../user_setting/presentation/cubit/user_settings/user_settings_cubit.dart';
+import '../../../../user_setting/presentation/cubit/user_settings/user_settings_state.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../../auth/presentation/cubit/auth_state.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
-  /// Show settings as a full-screen modal
   static Future<void> show(BuildContext context) {
     return Navigator.of(
       context,
@@ -24,179 +23,163 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _darkMode = true;
-  bool _notifications = false;
-  bool _isSigningOut = false;
+  late final String _userId;
 
   @override
   void initState() {
     super.initState();
-    _loadPreferences();
-  }
-
-  Future<void> _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _darkMode = prefs.getBool('darkMode') ?? true;
-      _notifications = prefs.getBool('notifications') ?? false;
-    });
-  }
-
-  Future<void> _toggleDarkMode(bool value) async {
-    setState(() => _darkMode = value);
-
-    // Save locally
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('darkMode', value);
-
-    // Save to Firestore
-    if (mounted) {
-      context.read<UserSettingsNotifier>().toggleDarkMode(kUserId, value);
-    }
-  }
-
-  Future<void> _toggleNotifications(bool value) async {
-    setState(() => _notifications = value);
-
-    // Save locally
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('notifications', value);
-
-    // Save to Firestore
-    if (mounted) {
-      context.read<UserSettingsNotifier>().toggleNotifications(kUserId, value);
+    final authState = context.read<AuthCubit>().state;
+    if (authState is Authenticated) {
+      _userId = authState.user.uid;
+      context.read<UserSettingsCubit>().listenToSettings(_userId);
+    } else {
+      _userId = '';
     }
   }
 
   Future<void> _signOut() async {
-    setState(() => _isSigningOut = true);
-    try {
-      await FirebaseAuth.instance.signOut();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Signed out successfully'),
-            backgroundColor: AppColor.emeraldGreen,
-          ),
-        );
-        Navigator.of(context).pop();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error signing out: ${e.toString()}'),
-            backgroundColor: AppColor.lightRed,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isSigningOut = false);
-      }
+    await context.read<AuthCubit>().signOut();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Signed out successfully'),
+          backgroundColor: AppColor.emeraldGreen,
+        ),
+      );
+      Navigator.of(context).pop();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.primaryColor,
-      appBar: AppBar(
+    if (_userId.isEmpty) {
+      return const Scaffold(
         backgroundColor: AppColor.primaryColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColor.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Settings',
-          style: context.fonts.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return BlocBuilder<UserSettingsCubit, UserSettingsState>(
+      builder: (context, state) {
+        bool darkMode = true;
+        bool notifications = true;
+        if (state is UserSettingsLoaded) {
+          darkMode = state.settings.darkMode;
+          notifications = state.settings.notificationsEnabled;
+        }
+
+        return Scaffold(
+          backgroundColor: AppColor.primaryColor,
+          appBar: AppBar(
+            backgroundColor: AppColor.primaryColor,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: AppColor.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              'Settings',
+              style: context.fonts.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(Dimension.padding16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Appearance Section
-            _SectionHeader(title: 'APPEARANCE'),
-            _SettingTile(
-              icon: Icons.dark_mode,
-              iconColor: AppColor.softLavender,
-              title: 'Dark Mode',
-              subtitle: 'Use dark theme',
-              trailing: Switch(
-                value: _darkMode,
-                onChanged: _toggleDarkMode,
-                activeThumbColor: AppColor.blueStart,
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            // Notifications Section
-            _SectionHeader(title: 'NOTIFICATIONS'),
-            _SettingTile(
-              icon: Icons.notifications,
-              iconColor: AppColor.amberOrange,
-              title: 'Push Notifications',
-              subtitle: 'Get notified about spending',
-              trailing: Switch(
-                value: _notifications,
-                onChanged: _toggleNotifications,
-                activeThumbColor: AppColor.blueStart,
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            // Account Section
-            _SectionHeader(title: 'ACCOUNT'),
-            _SettingTile(
-              icon: Icons.person,
-              iconColor: AppColor.emeraldGreen,
-              title: 'User ID',
-              subtitle: kUserId,
-            ),
-            const SizedBox(height: 8),
-
-            _SettingTile(
-              icon: Icons.logout,
-              iconColor: AppColor.lightRed,
-              title: 'Sign Out',
-              subtitle: 'Log out of your account',
-              trailing: _isSigningOut
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColor.lightRed,
-                      ),
-                    )
-                  : null,
-              onTap: _isSigningOut ? null : _signOut,
-            ),
-
-            const Spacer(),
-
-            // App version
-            Center(
-              child: Text(
-                'Expense Tracker v1.0.0',
-                style: context.fonts.bodySmall?.copyWith(
-                  color: AppColor.gray,
-                  fontSize: 11,
+          body: Padding(
+            padding: const EdgeInsets.all(Dimension.padding16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Appearance Section
+                const _SectionHeader(title: 'APPEARANCE'),
+                _SettingTile(
+                  icon: Icons.dark_mode,
+                  iconColor: AppColor.softLavender,
+                  title: 'Dark Mode',
+                  subtitle: 'Use dark theme',
+                  trailing: Switch(
+                    value: darkMode,
+                    onChanged: (value) {
+                      context.read<UserSettingsCubit>().toggleDarkMode(
+                        _userId,
+                        value,
+                      );
+                    },
+                    activeThumbColor: AppColor.blueStart,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 8),
+
+                // Notifications Section
+                const _SectionHeader(title: 'NOTIFICATIONS'),
+                _SettingTile(
+                  icon: Icons.notifications,
+                  iconColor: AppColor.amberOrange,
+                  title: 'Push Notifications',
+                  subtitle: 'Get notified about spending',
+                  trailing: Switch(
+                    value: notifications,
+                    onChanged: (value) {
+                      context.read<UserSettingsCubit>().toggleNotifications(
+                        _userId,
+                        value,
+                      );
+                    },
+                    activeThumbColor: AppColor.blueStart,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Account Section
+                const _SectionHeader(title: 'ACCOUNT'),
+                _SettingTile(
+                  icon: Icons.person,
+                  iconColor: AppColor.emeraldGreen,
+                  title: 'User ID',
+                  subtitle: _userId,
+                ),
+                const SizedBox(height: 8),
+
+                _SettingTile(
+                  icon: Icons.logout,
+                  iconColor: AppColor.lightRed,
+                  title: 'Sign Out',
+                  subtitle: 'Log out of your account',
+                  trailing: state is UserSettingsLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColor.lightRed,
+                          ),
+                        )
+                      : null,
+                  onTap: state is UserSettingsLoading ? null : _signOut,
+                ),
+
+                const Spacer(),
+
+                // App version
+                Center(
+                  child: Text(
+                    'Expense Tracker v1.0.0',
+                    style: context.fonts.bodySmall?.copyWith(
+                      color: AppColor.gray,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
+
+// ==================== Helper Widgets ====================
 
 class _SectionHeader extends StatelessWidget {
   final String title;
@@ -279,7 +262,7 @@ class _SettingTile extends StatelessWidget {
                 ],
               ),
             ),
-            ?trailing,
+            trailing ?? const SizedBox.shrink(),
           ],
         ),
       ),

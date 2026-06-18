@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:money/features/home/presentation/providers/home_providers.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../core/colors/app_color.dart';
+import '../../../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../../../../auth/presentation/cubit/auth_state.dart';
+import '../../../../../categories/domain/entities/category.dart';
+import '../../../../../categories/presentation/cubit/category_cubit.dart';
+import '../../../../../categories/presentation/cubit/category_state.dart';
+import '../../../../../transaction/presentation/cubit/transaction/transaction_cubit.dart';
 import '../home_screen/add_transaction_dialog.dart';
 
 class FloatingButton extends StatelessWidget {
@@ -11,16 +15,17 @@ class FloatingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthCubit>().state;
+    if (authState is! Authenticated) return const SizedBox.shrink();
+    final userId = authState.user.uid;
+    // إذا لم يكن هناك مستخدم، لا تعرض الزر أو تعطله
+    if (userId.isEmpty) return const SizedBox.shrink();
+
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: AppColor.navGradient,
         borderRadius: BorderRadius.circular(360),
-        // borderRadius: BorderRadius.only(
-        //   bottomLeft: Radius.circular(360),
-        //   bottomRight: Radius.circular(360),
-        //   topLeft: Radius.circular(360),
-        //   topRight: Radius.circular(360),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.blueAccent,
             blurRadius: 15,
@@ -28,7 +33,6 @@ class FloatingButton extends StatelessWidget {
           ),
         ],
       ),
-
       child: FloatingActionButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(360)),
         mini: true,
@@ -37,19 +41,43 @@ class FloatingButton extends StatelessWidget {
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         onPressed: () {
-          final categories = context.read<CategoryNotifier>().categories;
-          final userId = FirebaseAuth.instance.currentUser?.uid ?? 'njjgYe3zMmYLcwzyodfFUB2G6eG3';
+          final state = context.read<CategoryCubit>().state;
+          List<Category> categories = [];
+          if (state is CategoryLoaded) {
+            categories = state.categories;
+          }
           AddTransactionDialog.show(
             context,
             userId: userId,
             categories: categories,
-            onTransactionAdded: (transaction) {
-              context.read<TransactionNotifier>().addTransactionWithBalanceUpdate(transaction);
+            onTransactionAdded: (transaction) async {
+              try {
+                await context
+                    .read<TransactionCubit>()
+                    .addTransactionWithBalanceUpdate(transaction);
+                // يمكن إعادة تحميل التحليلات أو الرصيد هنا إذا لزم الأمر
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Transaction added successfully'),
+                      backgroundColor: AppColor.emeraldGreen,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: ${e.toString()}'),
+                      backgroundColor: AppColor.lightRed,
+                    ),
+                  );
+                }
+              }
             },
           );
         },
-
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
