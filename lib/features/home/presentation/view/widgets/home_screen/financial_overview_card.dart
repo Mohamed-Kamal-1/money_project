@@ -27,7 +27,7 @@ class _FinancialOverviewCardState extends State<FinancialOverviewCard> {
     userId = widget.userId; // لاحقاً: context.read<AuthCubit>().state.userId
     context.read<BalanceCubit>().listenToBalance(userId);
     final now = DateTime.now();
-    context.read<AnalyticsCubit>().loadAnalytics(userId, now.month, now.year);
+    context.read<AnalyticsCubit>().watchAnalytics(userId, now.month, now.year);
   }
 
   void _showUpdateBalanceDialog(BuildContext context) {

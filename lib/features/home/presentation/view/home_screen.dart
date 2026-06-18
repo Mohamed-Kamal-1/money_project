@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     context.read<BalanceCubit>().listenToBalance(widget.userId);
     final now = DateTime.now();
-    context.read<AnalyticsCubit>().loadAnalytics(
+    context.read<AnalyticsCubit>().watchAnalytics(
       widget.userId,
       now.month,
       now.year,

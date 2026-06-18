@@ -54,7 +54,7 @@ class QuickActionsSection extends StatelessWidget {
                         // إعادة تحميل التحليلات بعد الإضافة
                         if (context.mounted) {
                           final now = DateTime.now();
-                          context.read<AnalyticsCubit>().loadAnalytics(
+                          context.read<AnalyticsCubit>().watchAnalytics(
                             userId,
                             now.month,
                             now.year,

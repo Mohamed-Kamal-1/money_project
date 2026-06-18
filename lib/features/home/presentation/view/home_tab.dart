@@ -22,11 +22,11 @@ class _HomeTabState extends State<HomeTab> {
     super.initState();
     // هنا نمرر userId لكل شاشة وكل Cubit سيستخدم userId الخاص به
     tabs = [
-      MonthlyReportScreen(userId: widget.userId),
       HomeScreen(userId: widget.userId),
       AnalysisScreen(userId: widget.userId),
       const SizedBox(),
       CategoriesScreen(userId: widget.userId),
+      MonthlyReportScreen(userId: widget.userId),
     ];
   }
 

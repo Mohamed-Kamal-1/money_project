@@ -31,7 +31,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   }
 
   void _loadData() {
-    context.read<AnalyticsCubit>().loadAnalytics(
+    context.read<AnalyticsCubit>().watchAnalytics(
       widget.userId,
       _currentDate.month,
       _currentDate.year,

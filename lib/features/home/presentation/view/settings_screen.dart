@@ -6,6 +6,7 @@ import '../../../../core/dimensions/dimension_app.dart';
 import '../../../../core/extensions/theme_extension.dart';
 import '../../../../user_setting/presentation/cubit/user_settings/user_settings_cubit.dart';
 import '../../../../user_setting/presentation/cubit/user_settings/user_settings_state.dart';
+import '../../../auth_feature/presentation/view_model/cubit/auth_cubit.dart';
 import '../../../auth_feature/presentation/view_model/cubit/auth_state.dart';
 
 class SettingsScreen extends StatefulWidget {

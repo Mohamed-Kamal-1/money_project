@@ -28,7 +28,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     super.initState();
     context.read<CategoryCubit>().listenToCategories(widget.userId);
     final now = DateTime.now();
-    context.read<AnalyticsCubit>().loadAnalytics(
+    context.read<AnalyticsCubit>().watchAnalytics(
       widget.userId,
       now.month,
       now.year,

@@ -1,19 +1,29 @@
-import 'package:flutter/foundation.dart';
+import 'package:equatable/equatable.dart';
 
-@immutable
-abstract class AuthState {}
+import '../../../domain/entities/app_user.dart';
+
+abstract class AuthState extends Equatable {
+  const AuthState();
+  @override
+  List<Object?> get props => [];
+}
 
 class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
-class AuthSuccess extends AuthState {}
+class Authenticated extends AuthState {
+  final AppUser user;
+  const Authenticated(this.user);
+  @override
+  List<Object?> get props => [user];
+}
+
+class Unauthenticated extends AuthState {}
 
 class AuthError extends AuthState {
   final String message;
-  AuthError(this.message);
+  const AuthError(this.message);
+  @override
+  List<Object?> get props => [message];
 }
-
-// حالة خاصة لو عايز تتأكد من الـ Login Status أول ما الأبلكيشن يفتح
-class Authenticated extends AuthState {}
-class Unauthenticated extends AuthState {}

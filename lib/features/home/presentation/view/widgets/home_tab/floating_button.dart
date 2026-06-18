@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../core/colors/app_color.dart';
+import '../../../../../auth_feature/presentation/view_model/cubit/auth_cubit.dart';
 import '../../../../../auth_feature/presentation/view_model/cubit/auth_state.dart';
 import '../../../../../categories/domain/entities/category.dart';
 import '../../../../../categories/presentation/cubit/category_cubit.dart';

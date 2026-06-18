@@ -28,7 +28,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
     super.initState();
     context.read<MonthlyReportCubit>().listenToReports(widget.userId);
     final now = DateTime.now();
-    context.read<AnalyticsCubit>().loadAnalytics(
+    context.read<AnalyticsCubit>().watchAnalytics(
       widget.userId,
       now.month,
       now.year,
@@ -36,7 +36,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
   }
 
   void _loadAnalytics() {
-    context.read<AnalyticsCubit>().loadAnalytics(
+    context.read<AnalyticsCubit>().watchAnalytics(
       widget.userId,
       _selectedMonth.month,
       _selectedMonth.year,
