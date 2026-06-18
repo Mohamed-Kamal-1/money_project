@@ -113,9 +113,9 @@ import 'package:money/features/home/presentation/view/home_tab.dart';
 import 'package:money/user_setting/presentation/cubit/user_settings/user_settings_cubit.dart';
 
 import 'features/analytics/presentation/cubit/analytics_cubit.dart';
-import 'features/auth/presentation/cubit/auth_cubit.dart';
-import 'features/auth/presentation/cubit/auth_state.dart';
-import 'features/auth/presentation/view/login_screen.dart';
+import 'features/auth_feature/presentation/view/login_screen.dart';
+import 'features/auth_feature/presentation/view_model/cubit/auth_cubit.dart';
+import 'features/auth_feature/presentation/view_model/cubit/auth_state.dart';
 import 'features/balance/presentation/cubit/balance_cubit.dart';
 import 'features/categories/presentation/cubit/category_cubit.dart';
 import 'features/monthly_report/presentation/cubit/monthly_report_cubit.dart';
