@@ -7,6 +7,7 @@ import '../widgets_for_all_app/gradient_shape.dart';
 
 class AppTheme {
   static final appTheme = ThemeData(
+    // fontFamily: 'Cairo',
     useMaterial3: true,
     scaffoldBackgroundColor: AppColor.primaryColor,
     navigationBarTheme: NavigationBarThemeData(
@@ -68,12 +69,9 @@ class AppTheme {
         color: AppColor.white,
         fontWeight: FontWeight.w400,
       ),
-
     ),
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,
     hoverColor: Colors.transparent,
   );
 }
-
-
