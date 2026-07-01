@@ -38,16 +38,16 @@ class MonthlyExpenseCard extends StatelessWidget {
           ],
         ),
         Text(
-          '\$2,847.50',
+          '\$',
           style: context.fonts.displayMedium,
         ),
-        Text(
-          'vs \$3,124.80 last month',
-          style: context.fonts.bodyMedium?.copyWith(
-            color: AppColor.gray,
-            fontSize: 12,
-          ),
-        ),
+        // Text(
+        //   'vs \$3,124.80 last month',
+        //   style: context.fonts.bodyMedium?.copyWith(
+        //     color: AppColor.gray,
+        //     fontSize: 12,
+        //   ),
+        // ),
       ],
     );
   }

@@ -4,6 +4,7 @@ import 'package:money/features/home/presentation/view/widgets/home_tab/bottom_na
 
 import '../../../categories/presentation/view/categories_screen.dart';
 import 'home_screen.dart';
+import 'monthly_report_screen_new.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -21,10 +22,10 @@ class _HomeTabState extends State<HomeTab> {
 
     tabs = const [
       HomeScreen(),
-      CategoriesScreen(),
       AnalysisScreen(),
-      AnalysisScreen(),
+      SizedBox(), // Placeholder for center FAB
       CategoriesScreen(),
+      MonthlyReportScreen(),
     ];
   }
 
@@ -33,26 +34,17 @@ class _HomeTabState extends State<HomeTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop,
-      // floatingActionButton: const RepaintBoundary(child: FloatingButton()),
-
-      bottomNavigationBar:
-      AppBottomNavBar(
+      bottomNavigationBar: AppBottomNavBar(
         currentIndex: indexSelect,
         onClick: (index) {
+          if (index == 2) return; // Center FAB, handled separately
           if (indexSelect == index) return;
           setState(() {
             indexSelect = index;
           });
         },
-      )
-      ,
-      body: IndexedStack(
-        index: indexSelect,
-        children: tabs,
       ),
+      body: IndexedStack(index: indexSelect, children: tabs),
     );
   }
-
-
 }

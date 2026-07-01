@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:money/features/home/presentation/view/widgets/home_screen/add_transaction_dialog.dart';
 import 'package:money/features/home/presentation/view/widgets/home_screen/quick_actions_button.dart';
+import 'package:provider/provider.dart';
+import 'package:money/features/home/presentation/providers/home_providers.dart';
+import 'package:money/main.dart';
 
 import '../../../../../../core/colors/app_color.dart';
 import '../../../../../../core/dimensions/dimension_app.dart';
@@ -27,7 +31,39 @@ class QuickActionsSection extends StatelessWidget {
             Expanded(
               child: QuickActionsButton(
                 onTap: () {
-                  Feedback.forTap(context);
+                  final categories = context
+                      .read<CategoryNotifier>()
+                      .categories;
+                  AddTransactionDialog.show(
+                    context,
+                    userId: kUserId,
+                    categories: categories,
+                    onTransactionAdded: (transaction) async {
+                      try {
+                        await context
+                            .read<TransactionNotifier>()
+                            .addTransactionWithBalanceUpdate(transaction);
+                        // Reload analytics
+                        if (context.mounted) {
+                          final now = DateTime.now();
+                          context.read<AnalyticsNotifier>().loadAnalytics(
+                            kUserId,
+                            now.month,
+                            now.year,
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: ${e.toString()}'),
+                              backgroundColor: AppColor.lightRed,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  );
                 },
                 iconAndTextColor: AppColor.softLavender,
                 icon: Icons.add,
@@ -58,58 +94,6 @@ class QuickActionsSection extends StatelessWidget {
                 text: 'Budget',
               ),
             ),
-            // Expanded(
-            //   child: FinancialCard(
-            //     verticalPadding: Dimension.padding19,
-            //     horizontalPadding: Dimension.padding27,
-            //     alignment: .spaceEvenly,
-            //     crossAlignment: CrossAxisAlignment.center,
-            //     height: Dimension.heightCard103,
-            //     color: AppColor.darkMidnightBlue,
-            //     children: [
-            //       Icon(Icons.add, color: AppColor.softLavender),
-            //       Text('Add'),
-            //     ],
-            //   ),
-            // ),
-            // Expanded(
-            //   child: FinancialCard(
-            //     verticalPadding: Dimension.padding19,
-            //     horizontalPadding: Dimension.padding27,
-            //     alignment: .spaceEvenly,
-            //     crossAlignment: CrossAxisAlignment.center,
-            //     height: Dimension.heightCard103,
-            //     color: AppColor.darkGreen,
-            //     children: [
-            //       Icon(Icons.receipt, color: AppColor.emeraldGreen, size: 30),
-            //       Text(
-            //         'History',
-            //         style: context.fonts.bodyMedium?.copyWith(
-            //           color: AppColor.emeraldGreen,
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // Expanded(
-            //   child: FinancialCard(
-            //     verticalPadding: Dimension.padding19,
-            //     horizontalPadding: Dimension.padding27,
-            //     alignment: .spaceEvenly,
-            //     crossAlignment: CrossAxisAlignment.center,
-            //     height: Dimension.heightCard103,
-            //     color: AppColor.darkOliveDrab,
-            //     children: [
-            //       Icon(Icons.account_balance, color: AppColor.amberOrange),
-            //       Text(
-            //         'Budget',
-            //         style: context.fonts.bodyMedium?.copyWith(
-            //           color: AppColor.amberOrange,
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ],
