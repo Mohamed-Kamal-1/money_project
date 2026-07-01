@@ -43,10 +43,6 @@ dev_dependencies:
   build_runner:
 
 flutter:
-#  fonts:
-#    - family: Cairo
-#      fonts:
-#        - asset: assets/fonts/Cairo-Regular.ttf
 
 
   assets:
