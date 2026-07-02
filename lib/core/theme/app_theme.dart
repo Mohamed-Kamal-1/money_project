@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:money/core/colors/app_color.dart';
 
 import '../extensions/navigation_bar_extension.dart';
