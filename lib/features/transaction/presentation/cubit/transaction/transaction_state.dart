@@ -12,9 +12,16 @@ class TransactionLoading extends TransactionState {}
 
 class TransactionAdded extends TransactionState {
   final String transactionId;
-  const TransactionAdded(this.transactionId);
+  final double actualAmount;
+  final bool wasAdjusted;
+
+  const TransactionAdded({
+    required this.transactionId,
+    required this.actualAmount,
+    this.wasAdjusted = false,
+  });
   @override
-  List<Object?> get props => [transactionId];
+  List<Object?> get props => [transactionId, actualAmount, wasAdjusted];
 }
 
 class TransactionError extends TransactionState {

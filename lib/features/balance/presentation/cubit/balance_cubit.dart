@@ -9,7 +9,7 @@ import 'balance_state.dart';
 @injectable
 class BalanceCubit extends Cubit<BalanceState> {
   final BalanceRepository _repository;
-  StreamSubscription<double>? _balanceSubscription; // ✅ النوع الصحيح
+  StreamSubscription<double>? _balanceSubscription;
 
   BalanceCubit(this._repository) : super(BalanceInitial());
 
@@ -27,8 +27,7 @@ class BalanceCubit extends Cubit<BalanceState> {
   Future<void> updateBalance(String userId, double newBalance) async {
     emit(BalanceLoading());
     try {
-      await _repository.updateUserBalance(userId, newBalance);
-      // لا حاجة لإصدار جديد هنا لأن الـ stream سيرسل التحديث تلقائياً
+      final result = await _repository.updateUserBalance(userId, newBalance);
     } catch (e) {
       emit(BalanceError(e.toString()));
     }

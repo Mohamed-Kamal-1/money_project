@@ -7,7 +7,7 @@ import '../../domain/repositories/balance_repository.dart';
 class BalanceRepositoryImpl implements BalanceRepository {
   final FirebaseFirestore _firestore;
   BalanceRepositoryImpl(this._firestore);
-
+  final double currentBalance = 0;
   @override
   Stream<double> getUserBalanceStream(String userId) {
     return _firestore

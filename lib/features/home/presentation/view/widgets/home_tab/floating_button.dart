@@ -7,7 +7,6 @@ import '../../../../../auth_feature/presentation/view_model/cubit/auth_state.dar
 import '../../../../../categories/domain/entities/category.dart';
 import '../../../../../categories/presentation/cubit/category_cubit.dart';
 import '../../../../../categories/presentation/cubit/category_state.dart';
-import '../../../../../transaction/presentation/cubit/transaction/transaction_cubit.dart';
 import '../home_screen/add_transaction_dialog.dart';
 
 class FloatingButton extends StatelessWidget {
@@ -18,7 +17,6 @@ class FloatingButton extends StatelessWidget {
     final authState = context.watch<AuthCubit>().state;
     if (authState is! Authenticated) return const SizedBox.shrink();
     final userId = authState.user.uid;
-    // إذا لم يكن هناك مستخدم، لا تعرض الزر أو تعطله
     if (userId.isEmpty) return const SizedBox.shrink();
 
     return DecoratedBox(
@@ -50,31 +48,6 @@ class FloatingButton extends StatelessWidget {
             context,
             userId: userId,
             categories: categories,
-            onTransactionAdded: (transaction) async {
-              try {
-                await context
-                    .read<TransactionCubit>()
-                    .addTransactionWithBalanceUpdate(transaction);
-                // يمكن إعادة تحميل التحليلات أو الرصيد هنا إذا لزم الأمر
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Transaction added successfully'),
-                      backgroundColor: AppColor.emeraldGreen,
-                    ),
-                  );
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error: ${e.toString()}'),
-                      backgroundColor: AppColor.lightRed,
-                    ),
-                  );
-                }
-              }
-            },
           );
         },
         child: const Icon(Icons.add),

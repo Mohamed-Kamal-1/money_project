@@ -4,11 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../core/colors/app_color.dart';
 import '../../../../../../core/dimensions/dimension_app.dart';
 import '../../../../../../core/extensions/theme_extension.dart';
-import '../../../../../analytics/presentation/cubit/analytics_cubit.dart';
 import '../../../../../categories/domain/entities/category.dart';
 import '../../../../../categories/presentation/cubit/category_cubit.dart';
 import '../../../../../categories/presentation/cubit/category_state.dart';
-import '../../../../../transaction/presentation/cubit/transaction/transaction_cubit.dart';
 import 'add_transaction_dialog.dart';
 import 'quick_actions_button.dart';
 
@@ -36,41 +34,16 @@ class QuickActionsSection extends StatelessWidget {
             Expanded(
               child: QuickActionsButton(
                 onTap: () {
-                  // نستخدم CategoryCubit للحصول على الفئات الحالية
                   final state = context.read<CategoryCubit>().state;
                   List<Category> categories = [];
                   if (state is CategoryLoaded) {
                     categories = state.categories;
                   }
+                  // ✅ إزالة onTransactionAdded
                   AddTransactionDialog.show(
                     context,
                     userId: userId,
                     categories: categories,
-                    onTransactionAdded: (transaction) async {
-                      try {
-                        await context
-                            .read<TransactionCubit>()
-                            .addTransactionWithBalanceUpdate(transaction);
-                        // إعادة تحميل التحليلات بعد الإضافة
-                        if (context.mounted) {
-                          final now = DateTime.now();
-                          context.read<AnalyticsCubit>().watchAnalytics(
-                            userId,
-                            now.month,
-                            now.year,
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Error: ${e.toString()}'),
-                              backgroundColor: AppColor.lightRed,
-                            ),
-                          );
-                        }
-                      }
-                    },
                   );
                 },
                 iconAndTextColor: AppColor.softLavender,

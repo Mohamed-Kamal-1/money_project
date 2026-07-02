@@ -54,27 +54,55 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<String> addTransactionWithBalanceUpdate(
+  Future<TransactionResult> addTransactionWithBalanceUpdate(
     AppTransaction transaction,
   ) async {
     final batch = _firestore.batch();
     final transactionRef = _firestore.collection('transactions').doc();
-    batch.set(transactionRef, transaction.toJson());
 
     final userRef = _firestore.collection('users').doc(transaction.userId);
     final userDoc = await userRef.get();
     final currentBalance =
         (userDoc.data()?['balance'] as num?)?.toDouble() ?? 0.0;
-    final newBalance = transaction.type == 'income'
-        ? currentBalance + transaction.amount
-        : currentBalance - transaction.amount;
+
+    double actualAmount = transaction.amount;
+    double newBalance;
+
+    if (transaction.type == 'income') {
+      newBalance = currentBalance + transaction.amount;
+      actualAmount = transaction.amount;
+    } else {
+      // نوع expense
+      if (currentBalance <= 0) {
+        throw Exception('رصيدك الحالي صفر، لا يمكن إضافة مصروف.');
+      }
+      if (currentBalance < transaction.amount) {
+        actualAmount = currentBalance;
+        newBalance = 0;
+      } else {
+        newBalance = currentBalance - transaction.amount;
+        actualAmount = transaction.amount;
+      }
+    }
+
+    final finalTransaction = (actualAmount != transaction.amount)
+        ? transaction.copyWith(amount: actualAmount)
+        : transaction;
+
+    batch.set(transactionRef, finalTransaction.toJson());
     batch.update(userRef, {
       'balance': newBalance,
       'lastUpdated': FieldValue.serverTimestamp(),
     });
 
     await batch.commit();
-    return transactionRef.id;
+
+    // ✅ إرجاع TransactionResult بدلاً من String
+    return TransactionResult(
+      transactionId: transactionRef.id,
+      actualAmount: actualAmount,
+      wasAdjusted: actualAmount != transaction.amount,
+    );
   }
 
   @override

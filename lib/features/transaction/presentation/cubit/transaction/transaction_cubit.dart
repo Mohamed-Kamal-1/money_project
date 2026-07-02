@@ -18,8 +18,16 @@ class TransactionCubit extends Cubit<TransactionState> {
   ) async {
     emit(TransactionLoading());
     try {
-      final id = await _repository.addTransactionWithBalanceUpdate(transaction);
-      emit(TransactionAdded(id));
+      final result = await _repository.addTransactionWithBalanceUpdate(
+        transaction,
+      );
+      emit(
+        TransactionAdded(
+          transactionId: result.transactionId,
+          actualAmount: result.actualAmount,
+          wasAdjusted: result.wasAdjusted,
+        ),
+      );
     } catch (e) {
       emit(TransactionError(e.toString()));
     }
