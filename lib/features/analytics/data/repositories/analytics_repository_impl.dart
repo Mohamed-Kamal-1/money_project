@@ -9,9 +9,77 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
 
   AnalyticsRepositoryImpl(this._firestore);
 
+  // ==================== حساب النسبة المئوية للتغير ====================
+  Future<double> getPercentageChange(String userId, int month, int year) async {
+    final current = await calculateMonthTotal(userId, month, year);
+    int prevMonth = month - 1;
+    int prevYear = year;
+    if (prevMonth == 0) {
+      prevMonth = 12;
+      prevYear--;
+    }
+    final previous = await calculateMonthTotal(userId, prevMonth, prevYear);
+    if (previous == 0) return 0;
+    return ((current - previous) / previous) * 100;
+  }
+
+  // ==================== دوال الحساب الأساسية ====================
+  Future<double> calculateMonthTotal(String userId, int month, int year) async {
+    final start = DateTime(year, month, 1);
+    final end = DateTime(year, month + 1, 1);
+    final snapshot = await _firestore
+        .collection('transactions')
+        .where('userId', isEqualTo: userId)
+        .where('type', isEqualTo: 'expense')
+        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+        .where('date', isLessThan: Timestamp.fromDate(end))
+        .get();
+    return snapshot.docs.fold<double>(
+      0.0,
+      (sum, doc) => sum + (doc['amount'] as num).toDouble(),
+    );
+  }
+
+  Future<double> calculateMonthIncome(
+    String userId,
+    int month,
+    int year,
+  ) async {
+    final start = DateTime(year, month, 1);
+    final end = DateTime(year, month + 1, 1);
+    final snapshot = await _firestore
+        .collection('transactions')
+        .where('userId', isEqualTo: userId)
+        .where('type', isEqualTo: 'income')
+        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+        .where('date', isLessThan: Timestamp.fromDate(end))
+        .get();
+    return snapshot.docs.fold<double>(
+      0.0,
+      (sum, doc) => sum + (doc['amount'] as num).toDouble(),
+    );
+  }
+
+  Future<double> calculateDailyAverage(
+    String userId,
+    int month,
+    int year,
+  ) async {
+    final total = await calculateMonthTotal(userId, month, year);
+    final daysInMonth = DateTime(year, month + 1, 0).day;
+    return daysInMonth == 0 ? 0 : total / daysInMonth;
+  }
+
+  String _getSpendingBehavior(double total) {
+    if (total < 100) return 'Low spender';
+    if (total < 500) return 'Moderate spender';
+    if (total < 1000) return 'High spender';
+    return 'Very high spender';
+  }
+
+  // ==================== watchAnalytics – بث مباشر مع حساب النسبة ====================
   @override
   Stream<AnalyticsData> watchAnalytics(String userId, int month, int year) {
-    // نستمع إلى التغييرات في معاملات المستخدم للشهر المحدد
     final start = DateTime(year, month, 1);
     final end = DateTime(year, month + 1, 1);
 
@@ -21,10 +89,10 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
         .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
         .where('date', isLessThan: Timestamp.fromDate(end))
         .snapshots()
-        .map((snapshot) {
+        .asyncMap((snapshot) async {
+          // ✅ asyncMap لحساب النسبة
           final transactions = snapshot.docs;
 
-          // حساب كل القيم من المعاملات
           double totalExpenses = 0;
           double totalIncome = 0;
           Map<String, double> categorySpending = {};
@@ -56,9 +124,12 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
                     .reduce((a, b) => a.value > b.value ? a : b)
                     .key;
 
-          // حساب نسبة التغير (يحتاج شهر سابق)
-          final percentageChange =
-              0.0; // يمكن حسابه باستدعاء getPercentageChange
+          // ✅ حساب نسبة التغير عن الشهر السابق
+          final percentageChange = await getPercentageChange(
+            userId,
+            month,
+            year,
+          );
 
           return AnalyticsData(
             monthTotal: totalExpenses,
@@ -72,13 +143,4 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
           );
         });
   }
-
-  String _getSpendingBehavior(double total) {
-    if (total < 100) return 'Low spender';
-    if (total < 500) return 'Moderate spender';
-    if (total < 1000) return 'High spender';
-    return 'Very high spender';
-  }
-
-  // باقي الدوال كما هي...
 }

@@ -58,7 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   FinancialOverviewCard(userId: widget.userId),
                   const FinancialHealthCard(),
                   const MonthlyExpenseCard(),
-                  // const FinancialStatsGrid(),
                   QuickActionsSection(userId: widget.userId),
                 ],
               ),

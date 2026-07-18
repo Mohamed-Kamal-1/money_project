@@ -9,6 +9,7 @@ class MonthlyReport extends Equatable {
   final double totalExpenses;
   final Map<String, double> categoriesSpending;
   final DateTime createdAt;
+  final double? percentageChange; // ✅ أضف هذا الحقل (اختياري)
 
   const MonthlyReport({
     this.id,
@@ -19,6 +20,7 @@ class MonthlyReport extends Equatable {
     required this.totalExpenses,
     required this.categoriesSpending,
     required this.createdAt,
+    this.percentageChange,
   });
 
   @override
@@ -31,6 +33,7 @@ class MonthlyReport extends Equatable {
     totalExpenses,
     categoriesSpending,
     createdAt,
+    percentageChange,
   ];
 
   MonthlyReport copyWith({
@@ -42,6 +45,7 @@ class MonthlyReport extends Equatable {
     double? totalExpenses,
     Map<String, double>? categoriesSpending,
     DateTime? createdAt,
+    double? percentageChange,
   }) {
     return MonthlyReport(
       id: id ?? this.id,
@@ -52,6 +56,7 @@ class MonthlyReport extends Equatable {
       totalExpenses: totalExpenses ?? this.totalExpenses,
       categoriesSpending: categoriesSpending ?? this.categoriesSpending,
       createdAt: createdAt ?? this.createdAt,
+      percentageChange: percentageChange ?? this.percentageChange,
     );
   }
 }
