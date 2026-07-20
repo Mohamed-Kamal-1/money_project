@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money/core/colors/app_color.dart';
 import 'package:money/core/extensions/theme_extension.dart';
-import 'package:money/features/home/presentation/view/settings_screen.dart';
 
 class MonthlyReportHeader extends StatelessWidget {
   final DateTime selectedMonth;
+  final VoidCallback onSettingsTap; // ✅ إضافة هذا المعامل
 
-  const MonthlyReportHeader({super.key, required this.selectedMonth});
+  const MonthlyReportHeader({
+    super.key,
+    required this.selectedMonth,
+    required this.onSettingsTap, // ✅ جعله مطلوباً
+  });
 
   String get _monthLabel {
     return DateFormat('MMMM yyyy').format(selectedMonth);
@@ -35,7 +39,7 @@ class MonthlyReportHeader extends StatelessWidget {
           ],
         ),
         GestureDetector(
-          onTap: () => SettingsScreen.show(context),
+          onTap: onSettingsTap, // ✅ استخدام المعامل
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(

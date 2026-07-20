@@ -4,6 +4,7 @@ import 'package:money/core/colors/app_color.dart';
 import 'package:money/core/dimensions/dimension_app.dart';
 import 'package:money/features/analytics/presentation/cubit/analytics_cubit.dart';
 import 'package:money/features/analytics/presentation/cubit/analytics_state.dart';
+import 'package:money/features/home/presentation/view/settings_screen.dart';
 import 'package:money/features/monthly_report/presentation/cubit/monthly_report_cubit.dart';
 import 'package:money/features/monthly_report/presentation/view/widgets/achievements_card.dart';
 import 'package:money/features/monthly_report/presentation/view/widgets/comparison_row.dart';
@@ -15,6 +16,9 @@ import 'package:money/features/monthly_report/presentation/view/widgets/previous
 import 'package:money/features/monthly_report/presentation/view/widgets/spending_behavior.dart';
 import 'package:money/features/monthly_report/presentation/view/widgets/top_categories.dart';
 import 'package:money/features/monthly_report/presentation/view/widgets/total_expenses_card.dart';
+import 'package:money/features/transaction/domain/entities/transaction.dart';
+import 'package:money/features/transaction/presentation/cubit/transaction/transaction_cubit.dart';
+import 'package:money/features/transaction/presentation/cubit/transaction/transaction_state.dart';
 
 class MonthlyReportScreen extends StatefulWidget {
   final String userId;
@@ -33,6 +37,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
     super.initState();
     _selectedMonth = DateTime.now();
     context.read<MonthlyReportCubit>().listenToReports(widget.userId);
+    context.read<TransactionCubit>().listenToTransactions(widget.userId);
     _loadAnalytics();
   }
 
@@ -67,10 +72,10 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header
+                  // ✅ Header مع `selectedMonth` و `onSettingsTap`
                   MonthlyReportHeader(
-                    // monthLabel: _selectedMonth,
-                    selectedMonth: DateTime.now(),
+                    selectedMonth: _selectedMonth,
+                    onSettingsTap: () => SettingsScreen.show(context),
                   ),
                   const SizedBox(height: 20),
 
@@ -127,16 +132,28 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                             const SizedBox(height: 24),
                             AchievementsCard(analytics: analyticsState),
                             const SizedBox(height: 24),
-                            ExportButtons(
-                              onExportPDF: () async {
-                                await PdfGenerator.generateAndShowPDF(
-                                  context,
-                                  analyticsState,
-                                  _selectedMonth,
+
+                            // Export Buttons with Transactions
+                            BlocBuilder<TransactionCubit, TransactionState>(
+                              builder: (context, txState) {
+                                List<AppTransaction> transactions = [];
+                                if (txState is TransactionLoaded) {
+                                  transactions = txState.transactions;
+                                }
+                                return ExportButtons(
+                                  onExportPDF: () async {
+                                    await PdfGenerator.generateAndShowPDF(
+                                      context,
+                                      analyticsState,
+                                      _selectedMonth,
+                                      transactions,
+                                    );
+                                  },
                                 );
                               },
                             ),
                             const SizedBox(height: 24),
+
                             const PreviousReportsSection(),
                             const SizedBox(height: 100),
                           ],

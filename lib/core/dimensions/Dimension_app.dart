@@ -9,6 +9,7 @@ abstract class Dimension {
   static const double padding19 = 19;
   static const double padding27 = 27;
   static const double padding20 = 20;
+  static const double padding32 = 32;
 
   //Spacing//
   //================================//

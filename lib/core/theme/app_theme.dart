@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:money/core/colors/app_color.dart';
@@ -7,6 +8,12 @@ import '../widgets_for_all_app/gradient_shape.dart';
 
 class AppTheme {
   static final appTheme = ThemeData(
+    pageTransitionsTheme: PageTransitionsTheme(
+      builders: {
+        // TargetPlatform.android: const ,
+        TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+      },
+    ),
     // fontFamily: 'Cairo',
     useMaterial3: true,
     scaffoldBackgroundColor: AppColor.primaryColor,

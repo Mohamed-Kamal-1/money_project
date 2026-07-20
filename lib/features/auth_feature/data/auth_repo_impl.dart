@@ -45,27 +45,50 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AppUser> signInWithEmail(String email, String password) async {
     final credential = await _remoteDataSource.signInWithEmail(email, password);
     final firebaseUser = credential.user!;
+
+    // ✅ جلب الاسم من Firestore إذا كان مخزناً
+    final userDoc = await _firestore
+        .collection('users')
+        .doc(firebaseUser.uid)
+        .get();
+    final displayName =
+        userDoc.data()?['displayName'] as String? ?? firebaseUser.displayName;
+
     return AppUser(
       uid: firebaseUser.uid,
       email: firebaseUser.email,
-      displayName: firebaseUser.displayName,
+      displayName: displayName,
       photoUrl: firebaseUser.photoURL,
       emailVerifiedAt: firebaseUser.emailVerified ? DateTime.now() : null,
     );
   }
 
   @override
-  Future<AppUser> signUpWithEmail(String email, String password) async {
-    final credential = await _remoteDataSource.signUpWithEmail(email, password);
+  Future<AppUser> signUpWithEmail(
+    String email,
+    String password, [
+    String? displayName,
+  ]) async {
+    final credential = await _remoteDataSource.signUpWithEmail(
+      email,
+      password,
+      displayName ?? '',
+    );
     final firebaseUser = credential.user!;
 
-    // ✅ إنشاء مستند المستخدم في Firestore (للرصيد والإعدادات)
+    // ✅ تحديث الـ displayName في Firebase Authentication (اختياري)
+    await firebaseUser.updateDisplayName(displayName);
+
+    // ✅ تخزين الاسم في Firestore
     await _firestore.collection('users').doc(firebaseUser.uid).set({
       'balance': 0.0,
+      'displayName': displayName ?? '',
+      'email': email,
+      'createdAt': FieldValue.serverTimestamp(),
       'lastUpdated': FieldValue.serverTimestamp(),
-    });
+    }, SetOptions(merge: true));
 
-    // ✅ إنشاء مستند الإعدادات افتراضياً (اختياري)
+    // ✅ إنشاء مستند الإعدادات افتراضياً
     await _firestore.collection('user_settings').doc(firebaseUser.uid).set({
       'darkMode': true,
       'notificationsEnabled': true,
@@ -76,8 +99,9 @@ class AuthRepositoryImpl implements AuthRepository {
     return AppUser(
       uid: firebaseUser.uid,
       email: firebaseUser.email,
-      displayName: firebaseUser.displayName,
+      displayName: displayName ?? firebaseUser.displayName,
       photoUrl: firebaseUser.photoURL,
+      emailVerifiedAt: firebaseUser.emailVerified ? DateTime.now() : null,
     );
   }
 

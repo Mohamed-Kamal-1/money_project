@@ -99,13 +99,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         }
                         return BlocBuilder<AnalyticsCubit, AnalyticsState>(
                           builder: (context, analyticsState) {
-                            // ✅ طباعة لتتبع الحالة
-                            print('Analytics state: $analyticsState');
-                            if (analyticsState is AnalyticsLoaded) {
-                              print(
-                                'Spending map: ${analyticsState.categorySpending}',
-                              );
-                            }
                             Map<String, double> spending = {};
                             if (analyticsState is AnalyticsLoaded) {
                               spending = analyticsState.categorySpending;
@@ -117,18 +110,19 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                               ) {
                                 final cat = categories[index];
                                 final spent = spending[cat.name] ?? 0.0;
-                                final icon = IconData(
-                                  int.tryParse(cat.icon ?? 'unKnown') ??
-                                      Icons.category.codePoint,
-                                  fontFamily: 'MaterialIcons',
-                                );
+
+                                // ✅ التعامل مع الأيقونة كـ Emoji نصي، ووضع إيموجي افتراضي 💰 لو القيمة فارغة
+                                final String emojiIcon = cat.icon ?? '💰';
+
                                 return CategoryListItem(
-                                  icon: icon,
+                                  // نمرر الـ Text كـ widget يحتوي على الإيموجي بالحجم المناسب
+                                  iconWidget: Text(
+                                    emojiIcon,
+                                    style: const TextStyle(fontSize: 24),
+                                  ),
                                   iconBackgroundColor: Color(
-                                    int.parse(
-                                      cat.color ?? 'unKnown',
-                                      radix: 16,
-                                    ),
+                                    int.tryParse(cat.color ?? '0xFF9E9E9E') ??
+                                        0xFF9E9E9E,
                                   ),
                                   categoryName: cat.name ?? 'unKnown',
                                   spent: spent,
@@ -154,10 +148,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     builder: (context, categoryState) {
                       if (categoryState is CategoryLoaded) {
                         final categories = categoryState.categories;
-                        if (categories.isEmpty)
+                        if (categories.isEmpty) {
                           return const SliverToBoxAdapter(
                             child: SizedBox.shrink(),
                           );
+                        }
                         double totalBudget = 0;
                         for (final cat in categories) {
                           totalBudget += cat.budget ?? 0;

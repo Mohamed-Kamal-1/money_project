@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money/features/analytics/presentation/cubit/analytics_state.dart';
+import 'package:money/features/transaction/domain/entities/transaction.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -14,9 +15,10 @@ class PdfGenerator {
     BuildContext context,
     AnalyticsLoaded analytics,
     DateTime selectedMonth,
+    List<AppTransaction> transactions, // ✅ المعاملات مطلوبة
   ) async {
     try {
-      final pdf = await _buildPDF(analytics, selectedMonth);
+      final pdf = await _buildPDF(analytics, selectedMonth, transactions);
       await _showPDFOptions(context, pdf, selectedMonth);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -31,9 +33,14 @@ class PdfGenerator {
   static Future<pw.Document> _buildPDF(
     AnalyticsLoaded analytics,
     DateTime selectedMonth,
+    List<AppTransaction> transactions,
   ) async {
     final pdf = pw.Document();
     final monthLabel = DateFormat('MMMM yyyy').format(selectedMonth);
+
+    // ترتيب المعاملات تنازلياً حسب التاريخ
+    final sortedTransactions = List<AppTransaction>.from(transactions)
+      ..sort((a, b) => b.date.compareTo(a.date));
 
     pdf.addPage(
       pw.MultiPage(
@@ -259,6 +266,96 @@ class PdfGenerator {
                 ),
                 pw.SizedBox(height: 30),
 
+                // ✅ Transaction Details
+                pw.Text(
+                  'Transaction Details',
+                  style: pw.TextStyle(
+                    fontSize: 18,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.SizedBox(height: 12),
+                ...sortedTransactions.map((tx) {
+                  return pw.Container(
+                    margin: pw.EdgeInsets.only(bottom: 8),
+                    padding: pw.EdgeInsets.all(10),
+                    decoration: pw.BoxDecoration(
+                      border: pw.Border.all(color: PdfColors.grey300),
+                      borderRadius: pw.BorderRadius.circular(4),
+                    ),
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text(
+                              DateFormat('dd MMM yyyy').format(tx.date),
+                              style: pw.TextStyle(
+                                fontSize: 12,
+                                color: PdfColors.grey600,
+                              ),
+                            ),
+                            pw.Text(
+                              tx.type == 'income' ? 'Income' : 'Expense',
+                              style: pw.TextStyle(
+                                fontSize: 12,
+                                fontWeight: pw.FontWeight.bold,
+                                color: tx.type == 'income'
+                                    ? PdfColors.green700
+                                    : PdfColors.red700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        pw.SizedBox(height: 4),
+                        pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text(
+                              tx.categoryName,
+                              style: pw.TextStyle(
+                                fontSize: 14,
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
+                            pw.Text(
+                              '${tx.type == 'income' ? '+' : '-'}\$${tx.amount.toStringAsFixed(2)}',
+                              style: pw.TextStyle(
+                                fontSize: 14,
+                                fontWeight: pw.FontWeight.bold,
+                                color: tx.type == 'income'
+                                    ? PdfColors.green700
+                                    : PdfColors.red700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        pw.SizedBox(height: 2),
+                        pw.Text(
+                          tx.description,
+                          style: pw.TextStyle(
+                            fontSize: 12,
+                            color: PdfColors.grey700,
+                          ),
+                        ),
+                        if (tx.notes != null && tx.notes!.isNotEmpty) ...[
+                          pw.SizedBox(height: 2),
+                          pw.Text(
+                            'Note: ${tx.notes}',
+                            style: pw.TextStyle(
+                              fontSize: 11,
+                              color: PdfColors.grey500,
+                              fontStyle: pw.FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  );
+                }).toList(),
+
+                pw.SizedBox(height: 30),
                 pw.Divider(thickness: 1, color: PdfColors.grey300),
                 pw.SizedBox(height: 8),
                 pw.Text(

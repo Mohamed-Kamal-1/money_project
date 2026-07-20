@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-class AppColor {
+abstract class AppColor {
   static const Color primaryColor = Color(0xFF0B0F19);
+  static const Color darkGray = Color(0xFF6B7280);
   static const Color hoverIcons = Colors.lightBlue;
   static const Color bottomNavBarBackGround = Color(0xFF121826);
   static const Color darkOxfordBlue = Color(0xFF12122B);

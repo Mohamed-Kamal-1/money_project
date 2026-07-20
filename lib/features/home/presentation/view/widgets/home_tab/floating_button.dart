@@ -7,7 +7,7 @@ import '../../../../../auth_feature/presentation/view_model/cubit/auth_state.dar
 import '../../../../../categories/domain/entities/category.dart';
 import '../../../../../categories/presentation/cubit/category_cubit.dart';
 import '../../../../../categories/presentation/cubit/category_state.dart';
-import '../home_screen/add_transaction_dialog.dart';
+import '../home_screen/transation_dialog/add_transaction_dialog.dart';
 
 class FloatingButton extends StatelessWidget {
   const FloatingButton({super.key});

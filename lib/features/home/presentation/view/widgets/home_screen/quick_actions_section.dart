@@ -7,8 +7,9 @@ import '../../../../../../core/extensions/theme_extension.dart';
 import '../../../../../categories/domain/entities/category.dart';
 import '../../../../../categories/presentation/cubit/category_cubit.dart';
 import '../../../../../categories/presentation/cubit/category_state.dart';
-import 'add_transaction_dialog.dart';
+import '../../../../../transaction/presentation/view/screens/transaction_history_screen.dart';
 import 'quick_actions_button.dart';
+import 'transation_dialog/add_transaction_dialog.dart';
 
 class QuickActionsSection extends StatelessWidget {
   final String userId;
@@ -55,6 +56,13 @@ class QuickActionsSection extends StatelessWidget {
             Expanded(
               child: QuickActionsButton(
                 onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          TransactionHistoryScreen(userId: userId),
+                    ),
+                  );
                   Feedback.forTap(context);
                 },
                 iconAndTextColor: AppColor.emeraldGreen,

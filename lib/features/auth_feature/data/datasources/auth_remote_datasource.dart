@@ -24,6 +24,7 @@ class AuthRemoteDataSource {
   Future<firebase.UserCredential> signUpWithEmail(
     String email,
     String password,
+    String displayName,
   ) async {
     return await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,

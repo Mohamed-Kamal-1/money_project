@@ -36,10 +36,10 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> signUp(String email, String password) async {
+  Future<void> signUp(String email, String password, String displayName) async {
     emit(AuthLoading());
     try {
-      await _authRepository.signUpWithEmail(email, password);
+      await _authRepository.signUpWithEmail(email, password, displayName);
       // سيتم التحديث عبر الـ Stream تلقائياً
     } catch (e) {
       emit(AuthError(e.toString()));

@@ -30,30 +30,43 @@ class AddCategoryDialog extends StatefulWidget {
 class _AddCategoryDialogState extends State<AddCategoryDialog> {
   final _nameController = TextEditingController();
   final _budgetController = TextEditingController();
-  IconData _selectedIcon = Icons.category;
+
+  // تعديل: الإيموجي الافتراضي هو الرمز المالي
+  String _selectedEmoji = '💰';
   Color _selectedColor = const Color(0xFF3B82F6);
 
-  static const List<IconData> _availableIcons = [
-    Icons.restaurant,
-    Icons.directions_car,
-    Icons.shopping_bag,
-    Icons.movie,
-    Icons.favorite,
-    Icons.bolt,
-    Icons.home,
-    Icons.school,
-    Icons.flight,
-    Icons.sports_esports,
-    Icons.pets,
-    Icons.coffee,
-    Icons.music_note,
-    Icons.work,
-    Icons.fitness_center,
-    Icons.local_grocery_store,
-    Icons.phone_android,
-    Icons.attach_money,
-    Icons.child_care,
-    Icons.local_hospital,
+  // قائمة الإيموجيز المناسبة لتتبع المصاريف والنفقات
+  static const List<String> _availableEmojis = [
+    '🍔',
+    '🚗',
+    '🛍️',
+    '🎬',
+    '❤️',
+    '⚡',
+    '🏠',
+    '🎓',
+    '✈️',
+    '🎮',
+    '🐱',
+    '☕',
+    '🎵',
+    '💼',
+    '🏋️',
+    '🛒',
+    '📱',
+    '💰',
+    '👶',
+    '🏥',
+    '🎁',
+    '💈',
+    '🔒',
+    '📶',
+    '🔧',
+    '🍕',
+    '🥦',
+    '👟',
+    '🍿',
+    '💡',
   ];
 
   static const List<Color> _availableColors = [
@@ -76,10 +89,6 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
     _nameController.dispose();
     _budgetController.dispose();
     super.dispose();
-  }
-
-  String _encodeIconData(IconData icon) {
-    return '${icon.codePoint},${icon.fontFamily ?? ''},${icon.fontPackage ?? ''}';
   }
 
   void _submit() {
@@ -109,7 +118,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
     final category = Category(
       userId: widget.userId,
       name: name,
-      icon: _encodeIconData(_selectedIcon),
+      icon: _selectedEmoji, // حفظ الإيموجي كنص مباشرة في الداتابيز
       color: _selectedColor.value.toRadixString(16),
       type: 'expense',
       budget: budget,
@@ -217,15 +226,15 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text('Icon', style: context.fonts.bodySmall),
+                    Text('Select Emoji', style: context.fonts.bodySmall),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: _availableIcons.map((icon) {
-                        final isSelected = icon == _selectedIcon;
+                      children: _availableEmojis.map((emoji) {
+                        final isSelected = emoji == _selectedEmoji;
                         return GestureDetector(
-                          onTap: () => setState(() => _selectedIcon = icon),
+                          onTap: () => setState(() => _selectedEmoji = emoji),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
                             width: 44,
@@ -242,12 +251,11 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                                 width: isSelected ? 2 : 1,
                               ),
                             ),
-                            child: Icon(
-                              icon,
-                              color: isSelected
-                                  ? _selectedColor
-                                  : AppColor.gray,
-                              size: 20,
+                            child: Center(
+                              child: Text(
+                                emoji,
+                                style: const TextStyle(fontSize: 22),
+                              ),
                             ),
                           ),
                         );
@@ -362,10 +370,11 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                               color: _selectedColor,
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Icon(
-                              _selectedIcon,
-                              color: AppColor.white,
-                              size: 20,
+                            child: Center(
+                              child: Text(
+                                _selectedEmoji,
+                                style: const TextStyle(fontSize: 20),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 16),

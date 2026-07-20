@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:money/core/colors/app_color.dart';
+import 'package:money/core/dimensions/dimension_app.dart';
+import 'package:money/features/home/presentation/view/widgets/setting/app_version_footer.dart';
+import 'package:money/features/home/presentation/view/widgets/setting/settings_section_header.dart';
+import 'package:money/features/home/presentation/view/widgets/setting/settings_tile.dart';
+import 'package:money/features/home/presentation/view/widgets/setting/user_profile_header.dart';
 
-import '../../../../core/colors/app_color.dart';
-import '../../../../core/dimensions/dimension_app.dart';
-import '../../../../core/extensions/theme_extension.dart';
-import '../../../../user_setting/presentation/cubit/user_settings/user_settings_cubit.dart';
-import '../../../../user_setting/presentation/cubit/user_settings/user_settings_state.dart';
+import '../../../../../../user_setting/presentation/cubit/user_settings/user_settings_cubit.dart';
+import '../../../../../../user_setting/presentation/cubit/user_settings/user_settings_state.dart';
 import '../../../auth_feature/presentation/view_model/cubit/auth_cubit.dart';
 import '../../../auth_feature/presentation/view_model/cubit/auth_state.dart';
 
@@ -24,16 +27,26 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late final String _userId;
+  late final String _userName;
+  late final String _userEmail;
 
   @override
   void initState() {
     super.initState();
+    _loadUserData();
+  }
+
+  void _loadUserData() {
     final authState = context.read<AuthCubit>().state;
     if (authState is Authenticated) {
       _userId = authState.user.uid;
+      _userName = authState.user.displayName ?? 'User';
+      _userEmail = authState.user.email ?? 'No email';
       context.read<UserSettingsCubit>().listenToSettings(_userId);
     } else {
       _userId = '';
+      _userName = 'Guest';
+      _userEmail = '';
     }
   }
 
@@ -79,9 +92,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             title: Text(
               'Settings',
-              style: context.fonts.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
           body: Padding(
@@ -89,9 +102,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Appearance Section
-                const _SectionHeader(title: 'APPEARANCE'),
-                _SettingTile(
+                // User Profile Header
+                UserProfileHeader(userName: _userName, userEmail: _userEmail),
+                const SizedBox(height: 16),
+
+                // APPEARANCE Section
+                const SettingsSectionHeader(title: 'APPEARANCE'),
+                SettingsTile(
                   icon: Icons.dark_mode,
                   iconColor: AppColor.softLavender,
                   title: 'Dark Mode',
@@ -109,9 +126,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                // Notifications Section
-                const _SectionHeader(title: 'NOTIFICATIONS'),
-                _SettingTile(
+                // NOTIFICATIONS Section
+                const SettingsSectionHeader(title: 'NOTIFICATIONS'),
+                SettingsTile(
                   icon: Icons.notifications,
                   iconColor: AppColor.amberOrange,
                   title: 'Push Notifications',
@@ -129,17 +146,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                // Account Section
-                const _SectionHeader(title: 'ACCOUNT'),
-                _SettingTile(
+                // ACCOUNT Section
+                const SettingsSectionHeader(title: 'ACCOUNT'),
+                SettingsTile(
                   icon: Icons.person,
                   iconColor: AppColor.emeraldGreen,
-                  title: 'User ID',
-                  subtitle: _userId,
+                  title: 'User Name',
+                  subtitle: _userName,
                 ),
                 const SizedBox(height: 8),
-
-                _SettingTile(
+                SettingsTile(
+                  icon: Icons.email_outlined,
+                  iconColor: AppColor.blueStart,
+                  title: 'Email',
+                  subtitle: _userEmail,
+                ),
+                const SizedBox(height: 8),
+                // (User ID can be added here if needed)
+                SettingsTile(
                   icon: Icons.logout,
                   iconColor: AppColor.lightRed,
                   title: 'Sign Out',
@@ -160,112 +184,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Spacer(),
 
                 // App version
-                Center(
-                  child: Text(
-                    'Expense Tracker v1.0.0',
-                    style: context.fonts.bodySmall?.copyWith(
-                      color: AppColor.gray,
-                      fontSize: 11,
-                    ),
-                  ),
-                ),
+                const AppVersionFooter(),
                 const SizedBox(height: 16),
               ],
             ),
           ),
         );
       },
-    );
-  }
-}
-
-// ==================== Helper Widgets ====================
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  const _SectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 8),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: AppColor.gray,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.8,
-          fontSize: 11,
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String title;
-  final String subtitle;
-  final Widget? trailing;
-  final VoidCallback? onTap;
-
-  const _SettingTile({
-    required this.icon,
-    required this.iconColor,
-    required this.title,
-    required this.subtitle,
-    this.trailing,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColor.bottomNavBarBackGround,
-          borderRadius: BorderRadius.circular(Dimension.circular12),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: iconColor, size: 18),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColor.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColor.gray,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            trailing ?? const SizedBox.shrink(),
-          ],
-        ),
-      ),
     );
   }
 }

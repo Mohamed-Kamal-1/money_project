@@ -6,7 +6,7 @@ import '../../../../../core/extensions/theme_extension.dart';
 import '../../../../../core/widgets_for_all_app/custom_linear_indicator.dart';
 
 class CategoryListItem extends StatelessWidget {
-  final IconData icon;
+  final Widget iconWidget; // تعديل هنا ليستقبل الـ الـ Emoji كويدجت نصي
   final Color iconBackgroundColor;
   final String categoryName;
   final double spent;
@@ -16,7 +16,7 @@ class CategoryListItem extends StatelessWidget {
 
   const CategoryListItem({
     super.key,
-    required this.icon,
+    required this.iconWidget, // تعديل
     required this.iconBackgroundColor,
     required this.categoryName,
     required this.spent,
@@ -40,10 +40,9 @@ class CategoryListItem extends StatelessWidget {
       child: Column(
         spacing: Dimension.spacing8,
         children: [
-          // Header row: icon, name, budget, action buttons
           Row(
             children: [
-              // Category Icon
+              // Category Icon Container
               Container(
                 width: 40,
                 height: 40,
@@ -51,10 +50,11 @@ class CategoryListItem extends StatelessWidget {
                   color: iconBackgroundColor,
                   borderRadius: BorderRadius.circular(Dimension.circular12),
                 ),
-                child: Icon(icon, color: AppColor.white, size: 20),
+                child: Center(
+                  child: iconWidget,
+                ), // عرض الإيموجي في المنتصف مباشرة
               ),
               const SizedBox(width: Dimension.spacing12),
-              // Name and Budget
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,7 +76,6 @@ class CategoryListItem extends StatelessWidget {
                   ],
                 ),
               ),
-              // Action buttons
               _ActionButton(
                 icon: Icons.check,
                 backgroundColor: AppColor.blueStart,
@@ -90,7 +89,6 @@ class CategoryListItem extends StatelessWidget {
               ),
             ],
           ),
-          // Progress bar row
           Row(
             children: [
               Expanded(
@@ -108,7 +106,6 @@ class CategoryListItem extends StatelessWidget {
               ),
             ],
           ),
-          // Stats row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
