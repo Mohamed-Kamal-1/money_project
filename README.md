@@ -1,56 +1,45 @@
-# 💰 Personal Finance Tracker 
+# 💰 Personal Finance Tracker
 
-A robust and highly maintainable mobile application designed to help users track expenses, categorize transactions, and generate clear financial reports. 
+A robust, production‑ready mobile application for tracking personal expenses and income. Built with **Clean Architecture**, **BLoC (Cubit)** for state management, and **Firebase** for real‑time backend services – with full **Arabic (RTL) support** for PDF reports.
 
-Built with a strict adherence to **Clean Architecture** and **SOLID principles** to ensure scalability, decoupled logic, and a seamless developer experience.
+[![Flutter](https://img.shields.io/badge/Flutter-3.22+-blue.svg)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.4+-blue.svg)](https://dart.dev)
+[![Firebase](https://img.shields.io/badge/Firebase-10.0+-orange.svg)](https://firebase.google.com)
+[![BLoC](https://img.shields.io/badge/BLoC-Cubit-007AFF.svg)](https://bloclibrary.dev)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
 ## 🚀 Key Features
-* **Expense & Income Tracking:** Easily log and monitor daily financial transactions.
-* **Smart Categorization:** Organize transactions into customizable categories for better financial overview.
-* **Financial Reporting:** Generate insights and summaries to track spending habits over time.
-* **Real-Time Synchronization:** Secure and instant data updates powered by Firebase.
-* **Instant Updates (OTA):** Seamlessly receive bug fixes and feature updates without App Store/Google Play delays, using Shorebird.
+
+| Feature | Description |
+|---------|-------------|
+| **Expense & Income Tracking** | Add, edit, and delete transactions with custom categories (color + icon). Real‑time balance updates using **Firestore atomic batches** – balance never goes negative. |
+| **Analytics Dashboard** | View monthly totals, daily averages, percentage change vs previous month, top spending categories, donut chart, and spending behavior insights. |
+| **Monthly Reports** | Summary cards, top categories, spending insights, achievements, and **PDF export** with full **Arabic (RTL)** support – includes every transaction detail. |
+| **Transaction History** | Searchable and filterable history (by type, description, or category) with total income/expenses summary. |
+| **Authentication** | Secure sign‑in / sign‑up with email & password. User **display name** stored in Firestore. |
+| **User Settings** | Dark mode toggle, notification preferences, user profile (name + email), and sign‑out – all persisted in Firestore. |
+| **Real‑time Sync** | All data synchronizes instantly via Firestore streams – no manual refresh needed. |
+| **Responsive UI** | Consistent dark theme with bottom navigation (Home, Analytics, Categories, Reports, Settings). |
 
 ---
 
 ## 🏗️ Architecture & Tech Stack
-This project is engineered with a deep focus on separating concerns, making the codebase highly testable and easy to maintain.
 
-* **Framework:** [Flutter](https://flutter.dev) & Dart
-* **Architecture:** Clean Architecture (Domain, Data, and Presentation layers)
-* **State Management:** [BLoC / Cubit](https://pub.dev/packages/flutter_bloc) for predictable state transitions and centralized business logic.
-* **Backend & Database:** Firebase (Authentication & Cloud Firestore) for secure, real-time data handling.
-* **Over-The-Air (OTA) Updates:** [Shorebird](https://shorebird.dev)
-
----
-
-## 📂 Folder Structure (Clean Architecture)
-The application strictly follows a layered architecture:
-* **`domain/`**: Contains core business rules, Entities, and Repository Interfaces (Completely independent of any framework).
-* **`data/`**: Implements repositories, handles API calls, Firebase interactions, and data models.
-* **`presentation/`**: Contains UI components (Widgets, Screens) and State Management (Cubits), responding to user inputs and displaying states.
+| Category | Technologies |
+|----------|--------------|
+| **Framework** | Flutter 3.22+, Dart 3.4+ |
+| **Architecture** | Clean Architecture (Domain, Data, Presentation) |
+| **State Management** | BLoC (Cubit) |
+| **Backend** | Firebase (Authentication, Firestore) |
+| **Dependency Injection** | Injectable + GetIt (code‑generated) |
+| **PDF Generation** | pdf, printing, share_plus (with Cairo font for Arabic) |
+| **OTA Updates** | Shorebird |
+| **Local Storage** | SharedPreferences |
+| **Charts** | fl_chart |
+| **Internationalization** | intl, Google Fonts (Cairo) |
 
 ---
 
-## ✨ Technical Highlights
-* **Decoupled Logic:** Business logic is entirely separated from the UI layer using Cubit.
-* **Scalable Foundation:** The project structure is ready to accommodate new features without refactoring core logic.
-* **Clean Code:** Adheres to SOLID principles with descriptive naming conventions and modularized code.
-
----
-
-## 📸 Screenshots
-*(Add your application screenshots here to showcase the UI)*
-| Home Screen | Transactions | Reports |
-| ----------- | ----------- | ----------- |
-| <img src="" width="200"> | <img src="" width="200"> | <img src="" width="200"> |
-
----
-
-## 🛠️ Installation & Setup
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/Mohamed-Kamal-1/money_project.git](https://github.com/Mohamed-Kamal-1/money_project.git)
+## 📁 Folder Structure (Clean Architecture)
