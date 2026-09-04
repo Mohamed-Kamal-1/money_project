@@ -43,3 +43,104 @@ A robust, production‑ready mobile application for tracking personal expenses a
 ---
 
 ## 📁 Folder Structure (Clean Architecture)
+
+lib/
+├── core/ # Shared components
+│ ├── di/ # Dependency Injection (Injectable + GetIt)
+│ ├── theme/ # App theme & colors
+│ ├── dimensions/ # Spacing & sizing constants
+│ ├── extensions/ # Theme & context extensions
+│ └── widgets/ # Reusable UI components
+│
+├── features/
+│ ├── auth/ # Authentication
+│ │ ├── data/
+│ │ ├── domain/
+│ │ └── presentation/
+│ │ ├── cubit/ # AuthCubit + AuthState
+│ │ └── pages/ # LoginScreen, SignupScreen
+│ │
+│ ├── balance/ # Balance management
+│ │ ├── data/
+│ │ ├── domain/
+│ │ └── presentation/
+│ │ └── cubit/ # BalanceCubit + BalanceState
+│ │
+│ ├── analytics/ # Real‑time analytics
+│ │ ├── data/
+│ │ ├── domain/
+│ │ └── presentation/
+│ │ └── cubit/ # AnalyticsCubit + AnalyticsState
+│ │
+│ ├── transaction/ # Transaction CRUD & history
+│ │ ├── data/
+│ │ ├── domain/
+│ │ └── presentation/
+│ │ ├── cubit/ # TransactionCubit + TransactionState
+│ │ └── pages/ # TransactionHistoryScreen
+│ │
+│ ├── category/ # Category management
+│ │ ├── data/
+│ │ ├── domain/
+│ │ └── presentation/
+│ │ └── cubit/ # CategoryCubit + CategoryState
+│ │
+│ ├── monthly_report/ # Monthly reports + PDF export
+│ │ ├── data/
+│ │ ├── domain/
+│ │ └── presentation/
+│ │ ├── cubit/ # MonthlyReportCubit + MonthlyReportState
+│ │ └── widgets/ # All report components
+│ │
+│ ├── settings/ # User settings
+│ │ ├── data/
+│ │ ├── domain/
+│ │ └── presentation/
+│ │ └── cubit/ # UserSettingsCubit + UserSettingsState
+│ │
+│ └── home/ # Home screen & quick actions
+│ └── presentation/
+│ └── view/ # HomeTab, HomeScreen, widgets
+│
+├── main.dart
+└── firebase_options.dart
+
+---
+
+## 🧠 Technical Highlights
+
+### ✅ **Separation of Concerns (SoC)**
+- Every screen is composed of small, reusable widgets (e.g., `MonthSelector`, `ExportButtons`, `ComparisonRow`).
+- Cubits handle all business logic – widgets are pure UI.
+- Dependency injection via `Injectable` ensures loose coupling and testability.
+
+### ✅ **Real‑time Data Flow**
+- Firestore `Stream`s power live updates for balance, analytics, transactions, categories, and settings.
+- Cubits automatically emit new states when data changes – UI updates instantly.
+
+### ✅ **Atomic Balance Updates**
+- Uses Firestore `WriteBatch` to ensure balance and transaction are updated atomically.
+- If an expense exceeds current balance, the system deducts only the remaining balance (never goes negative) and adjusts the transaction amount accordingly.
+
+### ✅ **Arabic (RTL) PDF Support**
+- Custom **Cairo** font embedded in the app.
+- `pw.TextDirection.rtl` for proper right‑to‑left layout.
+- All labels and headings are fully translated for a native Arabic experience.
+
+### ✅ **Over‑The‑Air (OTA) Updates**
+- Integrated **Shorebird** to deploy fixes and features instantly without app store approval delays.
+
+---
+
+## 📦 Installation & Setup
+
+### 1. Prerequisites
+- Flutter SDK (3.22+)
+- Dart SDK (3.4+)
+- Android Studio / VS Code
+- Firebase project (with Authentication & Firestore enabled)
+
+### 2. Clone the Repository
+```bash
+git clone https://github.com/Mohamed-Kamal-1/money_project.git
+cd money_project
